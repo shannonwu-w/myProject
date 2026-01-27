@@ -192,7 +192,7 @@ const handleLogout = async () => {
       <div class="reservation-content">
         <h2>現在就來預約吧！</h2>
         <p>點擊下方按鈕開始預約，與可愛的貓咪們度過美好時光</p>
-        <button class="reservation-btn" @click="navigateTo('/reservation')">🐾 開始訂位</button>
+        <button class="reservation-btn" @click="navigateTo('/bookingpage')">🐾 開始訂位</button>
       </div>
     </section>
 

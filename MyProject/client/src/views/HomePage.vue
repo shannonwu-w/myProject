@@ -110,16 +110,23 @@ const navigateTo = (path) => {
   router.push(path)
 }
 
-const logout = async () => {
-  try {
-    await axios.post('/api/logout')
-    userCert.value = null
-    alert('已成功登出')
-    router.push('/login')
-  } catch (error) {
-    console.error('Logout error:', error)
+const handleLogout = async () => {
+  try{
+    const response = await axios.get('api/logout');
+    localStorage.removeItem('userCert');
+    alert("🐾 登出成功，期待下次見面！");
+    router.push('/login');
+
+    console(response);
+
+
+  }catch(error){
+    console.error("登出請求失敗:", error);
+    localStorage.clear();
+    router.push('/login');
   }
-}
+ 
+};
 </script>
 
 <template>
@@ -140,11 +147,11 @@ const logout = async () => {
             <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/memberCenter')">會員中心</button>
             <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/reservation')">訂位</button>
 
-            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/admin')">後台管理</button>
+            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/adminpage')">後台管理</button>
             <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/manageReservations')">訂位管理</button>
 
             <button class="nav-btn" @click="navigateTo('/userpage')">使用者頁面</button>
-            <button class="nav-btn" @click="logout">登出</button>
+            <button class="nav-btn" @click="handleLogout">登出</button>
           </template>
         </div>
       </div>

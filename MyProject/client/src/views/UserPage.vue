@@ -22,8 +22,37 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { onMounted,ref } from 'vue'
 
+import { useRouter } from 'vue-router';
+import axios from 'axios'
+
+const userDto = ref({ role: '' })
+
+onMounted(async () => {
+  try {
+    // 1. 向後端詢問目前的 Session 狀態
+    const response = await axios.get('/api/status');
+
+    // 2. 嚴格檢查：必須有資料且 role 不為空
+    if (response.data && response.data.role) {
+      userDto.value = response.data;
+      console.log("驗證成功，歡迎進入");
+    } else {
+      // 如果後端回傳 null 或空物件，手動丟出錯誤進入 catch
+      throw Error("No Session");
+    }
+  } catch (error) {
+    // 3. 只要失敗（沒登入、過期、或是連線錯誤）就執行這裡
+    console.error("狀態檢查：未登入", error);
+    
+    // 顯示警示視窗
+    alert("⚠️ 請先登入系統！");
+    
+    // 強制跳轉回登入頁
+    router.push('/login');
+  }
+});
 
 const router = useRouter();
 
@@ -32,11 +61,25 @@ const navigateTo = (path) => {
   router.push(`/${path}`);
 };
 
+
+
 // 登出功能
-const handleLogout = () => {
-  console.log('執行登出邏輯...');
-  // 清除 Token 或 Session，然後跳轉
-  router.push('/login');
+const handleLogout = async () => {
+  try{
+    const response = await axios.get('api/logout');
+    localStorage.removeItem('userCert');
+    alert("🐾 登出成功，期待下次見面！");
+    router.push('/login');
+
+    console(response);
+
+
+  }catch(error){
+    console.error("登出請求失敗:", error);
+    localStorage.clear();
+    router.push('/login');
+  }
+ 
 };
 </script>
 

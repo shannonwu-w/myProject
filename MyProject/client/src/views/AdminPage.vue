@@ -43,6 +43,8 @@ onMounted(async () => {
     }
     catch(error){
             console.error("驗證失敗", error);
+            alert("⚠️ 請先登入系統！");
+
             router.push('/login')
         }
    

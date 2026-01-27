@@ -2,7 +2,7 @@
   <div class="user-page">
     <nav class="navbar">
       <div class="user-info">
-        <a href="#">👤 {{ username }}</a>
+        <a>👤 您好</a>
       </div>
       <div class="nav-links">
         <router-link to="/homepage">🏠 回首頁</router-link>
@@ -22,20 +22,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-// 假設這是在 Vuex 或 Pinia 中的使用者資料
-const userCert = ref({
-  username: '測試使用者' // 預設值，實際應從 API 或 Store 獲取
-});
 
 const router = useRouter();
-
-// 計算顯示的用戶名
-const username = computed(() => {
-  return userCert.value ? userCert.value.username : "尚未登入";
-});
 
 // 導向功能
 const navigateTo = (path) => {
@@ -55,7 +45,9 @@ const handleLogout = () => {
 .user-page {
   font-family: 'Segoe UI', '微軟正黑體', sans-serif;
   min-height: 100vh;
-  margin: 0;
+  width: 100vw;
+  margin: 0,auto;
+  position: relative;
   background: linear-gradient(135deg, #fffaf4, #f5e8d3);
 }
 
@@ -86,8 +78,8 @@ const handleLogout = () => {
 
 /* 內容容器 */
 .container {
-  max-width: 900px;
-  margin: 50px auto;
+  max-width: 80%;
+  margin: 20px auto;
   padding: 30px;
   background-color: #fff8ee;
   border-radius: 15px;
@@ -132,14 +124,15 @@ h1 {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 600px) {
+@media (max-width:  600px) {
   .button-group {
     flex-direction: column;
     align-items: center;
   }
   .button-group button {
-    width: 80%;
+    width: 100%;
     font-size: 16px;
   }
+
 }
 </style>

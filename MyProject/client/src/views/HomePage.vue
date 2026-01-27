@@ -230,8 +230,33 @@ const logout = async () => {
 
 <style scoped>
 /* 全域基本樣式 (scoped) */
+.hero,
+.cat-gallery,
+.reservation,
+.menu,
+.footer {
+  /* 將 100vw 改為 100%，這樣它們會緊貼父容器的邊緣 */
+  width: 100%; 
+  box-sizing: border-box;
+}
 
 .home-container {
+  width: 100%;
+  min-width: 100%;        
+  margin: 0;
+  padding: 0;
+  display: block;        /* 改回 block，避免 flex 造成的子元素縮排問題 */
+  background-color: #fef8f0;
+  font-family: 'Arial', '微軟正黑體', sans-serif;
+  text-align: center;    /* 讓內部的行內元素或文字預設居中 */
+  overflow-x: hidden; 
+
+}
+
+/* .home-container {
+  width: 100%;
+  margin: 0 auto;
+
   padding: 0;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -239,7 +264,7 @@ const logout = async () => {
   line-height: 1.6;
   color: #333;
   background-color: #fef8f0;
-}
+} */
 
 
 /* --- Navigation Bar --- */
@@ -248,10 +273,14 @@ const logout = async () => {
   padding: 1rem 0;
   position: fixed;
   width: 100%;
+  left: 0;
+  right: 0;
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  box-sizing: border-box;
+  
 }
 
 .navbar-scrolled {
@@ -260,13 +289,23 @@ const logout = async () => {
 }
 
 .nav-container1 {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1100px;     /* 限制內容最大寬度，避免分太開 */
+  margin: 0 auto;        /* 關鍵：這會讓導覽列內容水平置中 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;         /* 使用百分比 padding，確保不同螢幕都有呼吸空間 */
+}
+
+/* .nav-container1 {
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* padding: 0 2rem; */
-}
+  padding: 0 2rem;
+} */
 
 .logo {
   font-size: 2rem;
@@ -306,14 +345,23 @@ const logout = async () => {
 }
 
 /* --- Hero Section --- */
-.hero,
-.cat-gallery,
-.reservation,
-.menu,
-.footer {
-  width: 100%;
-}
 .hero {
+  width: 100%;           
+  min-height:   100vh;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  justify-content: center;
+  margin: 0;
+  padding: 100px 20px;   /* 稍微給點左右 padding 讓文字不貼邊 */
+  /* 加入下面這行確保漸層或背景圖鋪滿 */
+  background: linear-gradient(rgba(139, 69, 19, 0.1), rgba(212, 165, 116, 0.1)),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%23f5e6d3" width="1000" height="600"/><circle fill="%23e6d2b7" cx="200" cy="150" r="80"/><circle fill="%23d4a574" cx="800" cy="100" r="60"/><path fill="%23c99660" d="M0,300 Q250,200 500,300 T1000,300 V600 H0 Z"/></svg>');
+  background-size: cover;
+  background-position: center;
+}
+
+/* .hero {
   background: linear-gradient(rgba(139, 69, 19, 0.1), rgba(212, 165, 116, 0.1)),
     url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%23f5e6d3" width="1000" height="600"/><circle fill="%23e6d2b7" cx="200" cy="150" r="80"/><circle fill="%23d4a574" cx="800" cy="100" r="60"/><path fill="%23c99660" d="M0,300 Q250,200 500,300 T1000,300 V600 H0 Z"/></svg>');
   background-size: cover;
@@ -325,16 +373,16 @@ const logout = async () => {
   justify-content: center;
   text-align: center;
   padding: 100px 20px;
-}
+} */
 
-.hero-content h1 {
+.hero-inner h1 {
   font-size: 3.5rem;
   color: #8B4513;
   margin-bottom: 1rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.hero-content p {
+.hero-inner p {
   font-size: 1.3rem;
   color: #666;
   max-width: 600px;
@@ -474,7 +522,7 @@ const logout = async () => {
 }
 
 .menu-container {
-  max-width: 1200px;
+  /* max-width: 100vw; */
   margin: 0 auto;
   text-align: center;
 }
@@ -563,7 +611,7 @@ const logout = async () => {
 }
 
 /* --- RWD --- */
-@media (max-width: 100px) {
+@media (max-width: 800px) {
   .hero-content h1 {
     font-size: 2.5rem;
   }

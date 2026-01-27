@@ -21,6 +21,12 @@ onMounted(() => {
 
 <style>
 /* 這裡放置「全域」樣式，不需要加上 scoped */
+#app {
+  width: 100%;       /* 確保它是滿寬的 */
+  max-width: none;   /* 移除最大寬度限制 */
+  margin: 0;         /* 移除外邊距 */
+  padding: 0;        /* 移除內邊距，這最重要！ */
+}
 :root {
   --primary-color: #8B4513;
   --accent-color: #D4A574;

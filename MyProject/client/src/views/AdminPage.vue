@@ -3,11 +3,11 @@
     <div class="container">
       <h1>喵喵貓咖管理系統 🐱☕</h1>
 
-      <template v-if="userRole === 'ADMIN'">
+      <div>
         <router-link to="/admin/usermanagement" class="button">👤 使用者管理</router-link>
         <router-link to="/admin/reservations" class="button">🧾 訂位管理</router-link>
         <router-link to="/homepage" class="button">🏠 喵喵貓咖訂位系統</router-link>
-      </template>
+      </div>
 
       <button @click="handleLogout" class="button logout-btn">🚪 登出</button>
     </div>
@@ -49,10 +49,23 @@ onMounted(async () => {
  
 });
 
-const handleLogout = () => {
-  // 登出邏輯：清除資料並導向登入頁
-  localStorage.removeItem('userCert');
-  router.push('/login');
+const handleLogout = async () => {
+  try{
+    const response = await axios.get('api/logout');
+    localStorage.removeItem('userCert');
+    alert("🐾 登出成功");
+    router.push('/login');
+
+    console(response);
+
+
+  }catch(error){
+    console.error("登出請求失敗:", error);
+    localStorage.clear();
+    router.push('/login');
+   
+  }
+ 
 };
 </script>
 
@@ -91,8 +104,8 @@ h1 {
 
 .button {
   display: inline-block;
-  margin: 1rem;
-  padding: 1rem 2rem;
+  margin: 12px;
+  padding: 15px ;
   font-size: 1.2rem;
   font-weight: bold;
   color: #FFF8E7;

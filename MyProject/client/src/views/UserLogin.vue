@@ -63,7 +63,7 @@ const handleReset = () => {
       <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
 
       <form @submit.prevent="handleLogin">
-        <label for="email">📧 Email：</label>
+        <label for="email">📧 帳號 Email：</label>
         <input 
           type="email" 
           id="email" 

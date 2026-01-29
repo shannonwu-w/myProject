@@ -123,7 +123,7 @@ const handleLogout = async () => {
     </nav>
 
     <div class="container">
-      <h1>🍽️ 餐廳線上訂位</h1>
+      <h1>🍽️ 喵喵貓咖線上訂位</h1>
 
       <form v-if="isLoggedIn" @submit.prevent="submitReservation">
 
@@ -210,9 +210,10 @@ const handleLogout = async () => {
   </div>
   
   <div class="footer">
-  <p>🏠 餐廳地址：台北市大安區咖啡街123號(捷運大安站2號出口站步行5分鐘)</p>
   <p>☎️ 連絡電話：(02)2345-6789</p>
   <p>✉️ 電子信箱：meowmeowcafe@gmail.com</p>
+  <p>🏠 地址：台北市大安區咖啡街123號(捷運大安站2號出口站步行5分鐘)</p>
+
 </div>
 </div>
 </template>
@@ -267,6 +268,10 @@ h1 {
   width: 100%;
 
 
+}
+
+.notes{
+  font-size: 13px;
 }
 
 label {

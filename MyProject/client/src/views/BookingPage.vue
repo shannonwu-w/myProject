@@ -76,10 +76,13 @@ onMounted(async () => {
       isLoggedIn.value = true
     } else {
       isLoggedIn.value = false
+       alert("請先登入");
       router.push('/login')
+     
     }
   } catch (error) {
     console.error('驗證失敗:', error)
+    alert("請先登入");
     router.push('/login')
   }
 })
@@ -138,8 +141,9 @@ const handleLogout = async () => {
           <label>👥 用餐人數:</label>
           <select v-model="form.people" required>
             <option value="">請選擇</option>
-            <option v-for="n in 6" :key="n" :value="n">{{ n }} 位</option>
+            <option v-for="n in 5" :key="n+1" :value="n+1">{{ n+1 }} 位</option>
           </select>
+           <div class="notes">備註：七位(含)以上的客人請打電話預約，謝謝🙏 <br> 聯絡專線：(02)2345-6789</div>
         </div>
 
         <div class="form-group">
@@ -162,7 +166,11 @@ const handleLogout = async () => {
             <option value="13:00">13:00</option>
             <option value="14:00">14:00</option>
             <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
             <option value="18:00">18:00</option>
+
+
           </select>
         </div>
 
@@ -188,8 +196,25 @@ const handleLogout = async () => {
 
         <button class="submit-button">✅ 送出訂位</button>
       </form>
-    </div>
+    
+      <div class="notice">
+    <h2>🛎️ 用餐注意事項</h2>
+    <ul>
+      <li>⏰ 預約保留 10 分鐘，逾時將取消訂位。</li>
+      <li>⏳ 為確保用餐品質，請準時抵達。</li>
+      <li>📞 若需更改或取消訂位，請提前一天通知。</li>
+      <li>🍾 自備酒水將酌收開瓶費。</li>
+      <li>📝 如有其他特殊需求，請於備註欄位填寫或來電洽詢。</li>
+    </ul>
   </div>
+  </div>
+  
+  <div class="footer">
+  <p>🏠 餐廳地址：台北市大安區咖啡街123號(捷運大安站2號出口站步行5分鐘)</p>
+  <p>☎️ 連絡電話：(02)2345-6789</p>
+  <p>✉️ 電子信箱：meowmeowcafe@gmail.com</p>
+</div>
+</div>
 </template>
 
 

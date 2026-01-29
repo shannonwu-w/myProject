@@ -148,9 +148,10 @@ const handleLogout = async () => {
             <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
 
             <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/adminpage')">後台管理</button>
-            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/manageReservations')">訂位管理</button>
+            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/userpage')">使用者頁面</button>
+            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
 
-            <button class="nav-btn" @click="navigateTo('/userpage')">使用者頁面</button>
+
             <button class="nav-btn" @click="handleLogout">登出</button>
           </template>
         </div>

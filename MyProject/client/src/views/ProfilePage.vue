@@ -4,7 +4,7 @@
       <div class="nav-left">🐱 喵喵貓咖</div>
       <div class="nav-links">
         <a href="/homepage">🏠 回首頁</a>
-        <a href="/userpage">👤 回使用者首頁</a>
+        <a href="/userpage">👤 回會員中心</a>
       </div>
     </nav>
 
@@ -13,12 +13,12 @@
       <h2>👤 個人資料</h2>
       
       <div class="profile-field">
-        <label>帳號：</label>
+        <label>使用者名稱：</label>
         <span>{{ user.username }}</span>
       </div>
 
       <div class="profile-field">
-        <label>電子信箱：</label>
+        <label>帳號 (電子信箱)：</label>
         <span>{{ user.email }}</span>
       </div>
 
@@ -39,7 +39,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
@@ -54,21 +53,22 @@ const user = ref({
 // 是否已登入
 const isLoggedIn = ref(false);
 
-// 取得使用者登入狀態
-const checkLogin = async () => {
+// 取得使用者完整資料（同時驗證登入）
+const fetchUserProfile = async () => {
   try {
-    const res = await axios.get('/api/status', { withCredentials: true });
+    const res = await axios.get('/api/profile', { withCredentials: true });
     // 登入成功
     isLoggedIn.value = true;
     user.value = {
-      username: res.data.username,
-      email: res.data.email || 'user@example.com' // 若 UserCert 沒 email，可自訂
+      username: res.data.username || '未提供',
+      email: res.data.email || '未提供',
+      phone: res.data.phone || '未提供'
     };
   } catch (err) {
-    // 401 未登入 → 跳轉登入頁
+    // 401 或未登入 → 跳轉登入頁
     alert("請先登入!");
     window.location.href = '/login';
-    console.log(err)
+    console.log(err);
   }
 };
 
@@ -77,11 +77,12 @@ const goToChangePassword = () => {
   window.location.href = '/changePassword';
 };
 
-// 頁面載入時檢查登入狀態
+// 頁面載入時取得使用者資料
 onMounted(() => {
-  checkLogin();
+  fetchUserProfile();
 });
 </script>
+
 
 <style scoped>
 /* Scoped 確保樣式只影響此元件 */
@@ -143,7 +144,7 @@ h2 {
 }
 
 .profile-field label {
-  width: 120px;
+  width: 150px;
   font-weight: bold;
   color: #8B4513;
 }

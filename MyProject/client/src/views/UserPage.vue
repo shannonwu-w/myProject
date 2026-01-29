@@ -2,7 +2,7 @@
   <div class="user-page">
     <nav class="navbar">
       <div class="user-info">
-        <a>👤 您好</a>
+        <a>👤 {{ user.username }} 您好</a>
       </div>
       <div class="nav-links">
         <router-link to="/homepage">🏠 回首頁</router-link>
@@ -11,7 +11,7 @@
     </nav>
 
     <main class="container">
-      <h1>🌟 歡迎來到使用者頁面 🌟</h1>
+      <h1>🌟 歡迎來到會員中心 🌟</h1>
       <div class="button-group">
         <button @click="navigateTo('BookingPage')">🍽️ 來去訂位</button>
         <button @click="navigateTo('bookinghistory')">📖 歷史訂位查詢</button>
@@ -28,6 +28,10 @@ import { useRouter } from 'vue-router';
 import axios from 'axios'
 
 const userDto = ref({ role: '' })
+const user = ref ({
+  username:''
+})
+
 
 onMounted(async () => {
   try {
@@ -38,6 +42,9 @@ onMounted(async () => {
     if (response.data && response.data.role) {
       userDto.value = response.data;
       console.log("驗證成功，歡迎進入");
+      user.value ={
+        username: response.data.username
+}
     } else {
       // 如果後端回傳 null 或空物件，手動丟出錯誤進入 catch
       throw Error("No Session");
@@ -55,6 +62,7 @@ onMounted(async () => {
 });
 
 const router = useRouter();
+
 
 // 導向功能
 const navigateTo = (path) => {

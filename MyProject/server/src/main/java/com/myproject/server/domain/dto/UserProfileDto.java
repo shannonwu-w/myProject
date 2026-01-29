@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserProfileDto {
     private String username;
-    private String phone;
     private String email;
-
+    private String phone;
 }

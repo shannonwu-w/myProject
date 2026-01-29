@@ -56,7 +56,7 @@ public class UsersService {
                 .orElseThrow(() -> new Exception("使用者不存在"));
 
         UserProfileDto dto = new UserProfileDto();
-        dto.setName(user.getUsername());
+        dto.setUsername(user.getUsername());
         dto.setPhone(user.getPhone());
         dto.setEmail(user.getEmail());
         return dto;

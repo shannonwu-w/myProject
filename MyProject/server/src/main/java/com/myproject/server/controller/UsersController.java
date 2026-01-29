@@ -1,5 +1,6 @@
 package com.myproject.server.controller;
 
+import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.dto.UserProfileDto;
 import com.myproject.server.domain.dto.UsersDto;
 import com.myproject.server.domain.entity.Users;
@@ -52,11 +53,15 @@ public class UsersController {
 
     @GetMapping("/profile")
     public UserProfileDto getUserProfile(HttpSession session) throws Exception {
-        String email = (String) session.getAttribute("userEmail");
-        if (email == null) {
+
+        UserCert cert = (UserCert) session.getAttribute("userCert");
+        if (cert == null) {
             throw new Exception("使用者未登入");
         }
+
+        String email = cert.getEmail();
         return usersService.getUserProfileByEmail(email);
     }
+
 
 }

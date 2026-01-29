@@ -7,6 +7,8 @@ axios.defaults.withCredentials = true
 
 const router = useRouter()
 const isLoggedIn = ref(false)
+const memberProfile = ref(null)
+
 
 // =======================
 // 是否自動帶入會員資料
@@ -43,8 +45,9 @@ const fetchUserProfile = async () => {
   try {
     const res = await axios.get('/api/profile')
     if (res.data) {
-      // 對應欄位
-      form.name = res.data.username || ''
+      memberProfile.value = res.data
+
+      form.name  = res.data.username || ''
       form.phone = res.data.phone || ''
       form.email = res.data.email || ''
     }
@@ -53,16 +56,13 @@ const fetchUserProfile = async () => {
   }
 }
 
+
 // =======================
 // 監聽是否勾選自動帶入
 // =======================
 watch(autoFill, async (checked) => {
-  if (checked) {
+  if (checked && !memberProfile.value) {
     await fetchUserProfile()
-  } else {
-    form.name = ''
-    form.phone = ''
-    form.email = ''
   }
 })
 

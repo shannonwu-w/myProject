@@ -27,13 +27,13 @@ public class LoginController {
         }
 
         try {
-            // 2. 執行驗證邏輯
-            UserCert userCert = certService.getCert(loginDto.getUsername(), loginDto.getPassword());
+            // 2. 執行驗證邏輯 (使用 email)
+            UserCert userCert = certService.getCert(loginDto.getEmail(), loginDto.getPassword());
 
             // 3. 登入成功：存入 Session 供 Filter 檢查
             session.setAttribute("userCert", userCert);
 
-            // 4. 回傳 UserCert (前端會收到包含 userId, username, role 的 JSON)
+            // 4. 回傳 UserCert (前端會收到包含 email, username, role 的 JSON)
             return ResponseEntity.ok(userCert);
 
         } catch (CertException e) {

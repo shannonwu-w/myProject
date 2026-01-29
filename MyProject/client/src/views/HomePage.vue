@@ -144,8 +144,8 @@ const handleLogout = async () => {
           <template v-else>
             <span class="user-name-tag">您好，{{ userCert.username }}</span>
             
-            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/memberCenter')">會員中心</button>
-            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/reservation')">訂位</button>
+            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/userpage')">會員中心</button>
+            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
 
             <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/adminpage')">後台管理</button>
             <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/manageReservations')">訂位管理</button>

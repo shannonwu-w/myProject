@@ -1,12 +1,12 @@
 <script setup>
-import { ref, onMounted, reactive, watch } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 axios.defaults.withCredentials = true
 
 const router = useRouter()
-const isLoggedIn = ref(true)
+const isLoggedIn = ref(false)
 
 // =======================
 // 是否自動帶入會員資料
@@ -41,9 +41,10 @@ const maxDate = nextMonth.toISOString().split('T')[0]
 // =======================
 const fetchUserProfile = async () => {
   try {
-    const res = await axios.get('/api/user/profile')
+    const res = await axios.get('/api/profile')
     if (res.data) {
-      form.name = res.data.name || ''
+      // 對應欄位
+      form.name = res.data.username || ''
       form.phone = res.data.phone || ''
       form.email = res.data.email || ''
     }
@@ -66,7 +67,7 @@ watch(autoFill, async (checked) => {
 })
 
 // =======================
-// 頁面初始化（只做登入驗證）
+// 頁面初始化（登入驗證）
 // =======================
 onMounted(async () => {
   try {
@@ -79,6 +80,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('驗證失敗:', error)
+    router.push('/login')
   }
 })
 
@@ -123,14 +125,14 @@ const handleLogout = async () => {
       <form v-if="isLoggedIn" @submit.prevent="submitReservation">
 
         <!-- 自動帶入會員資料 -->
-        <!-- <div class="form-group autofill">
+        <div class="form-group autofill">
           <input
             type="checkbox"
             id="autoFill"
             v-model="autoFill"
           />
           <label for="autoFill">自動帶入會員資料</label>
-        </div> -->
+        </div>
 
         <div class="form-group">
           <label>👥 用餐人數:</label>
@@ -186,23 +188,10 @@ const handleLogout = async () => {
 
         <button class="submit-button">✅ 送出訂位</button>
       </form>
-
-      <div class="notice">
-        <h2>🛎️ 用餐注意事項</h2>
-        <ul>
-          <li>⏰ 訂位保留 10 分鐘</li>
-          <li>📞 若需更改請提前一天通知</li>
-          <li>🍾 自備酒水將酌收開瓶費</li>
-        </ul>
-      </div>
-
-     </div>
-      <div class="footer">
-        <p>🏠 台北市大安區咖啡街123號</p>
-        <p>☎️ (02)2345-6789</p>
-      </div>
+    </div>
   </div>
 </template>
+
 
 <style scoped>
 .reservation-page {
@@ -223,7 +212,7 @@ const handleLogout = async () => {
   font-weight: 600;
 }
 
-/* 
+
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -233,7 +222,7 @@ const handleLogout = async () => {
   padding: 0;
   cursor: pointer;
  
-   }  */
+   } 
 
 .container {
   background: #fff9f0;
@@ -271,7 +260,7 @@ textarea {
   box-sizing: border-box;
 }
 
-/* .autofill {
+.autofill {
   width: 500px;
   display: flex;
   align-items: center;
@@ -280,14 +269,14 @@ textarea {
   margin-bottom: 20px;
   gap: 6px;          
   color: #6b3e07;
-} */
+}
 
-/* .autofill input[type="checkbox"] {
+.autofill input[type="checkbox"] {
   margin: 0;       
   padding: 0;
   width: auto;
   height: auto;
-} */
+}
 
 .submit-button {
   width: 100%;

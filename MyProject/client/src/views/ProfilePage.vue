@@ -23,6 +23,11 @@
       </div>
 
       <div class="profile-field">
+        <label>電話：</label>
+        <span>{{ user.phone }}</span>
+      </div>
+
+      <div class="profile-field">
         <label></label>
         <button @click="goToChangePassword">🔒 更改密碼</button>
       </div>
@@ -42,7 +47,8 @@ import axios from 'axios';
 // 使用者資料
 const user = ref({
   username: '讀取中...',
-  email: '讀取中...'
+  email: '讀取中...',
+  phone: '讀取中...'
 });
 
 // 是否已登入
@@ -62,6 +68,7 @@ const checkLogin = async () => {
     // 401 未登入 → 跳轉登入頁
     alert("請先登入!");
     window.location.href = '/login';
+    console.log(err)
   }
 };
 

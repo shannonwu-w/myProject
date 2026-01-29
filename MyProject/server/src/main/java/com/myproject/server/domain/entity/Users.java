@@ -1,8 +1,9 @@
 package com.myproject.server.domain.entity;
 
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -11,38 +12,41 @@ import java.time.LocalDateTime;
 @Data
 public class Users {
 
+    // 主鍵，數字自增
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator ="USERS_ID_SEQ") // 自動生成 id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ")
     @SequenceGenerator(
-            sequenceName = "USERS_ID_SEQ", // 必須對應 SQL 中的 "USERS_ID_SEQ"
-            allocationSize = 1             // 必須對應 SQL 中的 INCREMENT BY 1
+            name = "USERS_ID_SEQ",
+            sequenceName = "USERS_ID_SEQ",
+            allocationSize = 1
     )
     @Column(name = "USER_ID")
     private Long userId;
 
-    @Column(name = "USERNAME", unique = true, nullable = false, length = 50)
-    private String username;
-
-    @Column(name = "PASSWORD_HASH", nullable = false)
-    private String passwordHash;
-
-    @Column(name = "SALT")
-    private String salt;
-
-    @Column(name = "EMAIL", nullable = false)
+    // Email 保留唯一約束，用來登入
+    @Column(name = "EMAIL", nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(name = "ROLE")
+    @Column(name = "PASSWORD_HASH", nullable = false, length = 255)
+    private String passwordHash;
+
+    @Column(name = "SALT", length = 255)
+    private String salt;
+
+    @Column(name = "PHONE", length = 20)
+    private String phone;
+
+    @Column(name = "USERNAME", nullable = false, length = 50)
+    private String username;
+
+    @Column(name = "ROLE", length = 20)
     private String role;
 
+    @CreationTimestamp
     @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
-
-
-
-
 }
-

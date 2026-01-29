@@ -5,16 +5,16 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 定義表單資料
+// 定義表單資料（使用 email 登入）
 const loginForm = ref({
-  username: '',
+  email: '',      // 改成 email
   password: '',
   authcode: ''
 })
 
 // 錯誤訊息與驗證碼圖片路徑
 const errorMsg = ref('')
-const captchaUrl = ref('/api/authcode') // 加上 /api 前綴以配合你的 Proxy 設定
+const captchaUrl = ref('/api/authcode') // 加上 /api 前綴
 
 // 重新整理驗證碼
 const refreshAuthcode = () => {
@@ -24,32 +24,34 @@ const refreshAuthcode = () => {
 // 處理登入提交
 const handleLogin = async () => {
     try {
-        // 發送 JSON 格式的 loginDto
+        // 發送 JSON 格式的 LoginDto
         const response = await axios.post('/api/login', {
-            username: loginForm.value.username,
+            email: loginForm.value.email,   // 使用 email
             password: loginForm.value.password,
             authcode: loginForm.value.authcode
         });
 
-        // 成功 (HTTP 200)
-        const cert = response.data; // 這就是 UserCert
+        // 登入成功，取得 UserCert
+        const cert = response.data; 
         console.log("歡迎！您的角色是：" + cert.role);
         
-        // 根據角色手動跳轉
+        // 根據角色跳轉頁面
         if (cert.role === 'admin') router.push('/adminpage');
         else router.push('/homepage');
 
     } catch (error) {
-        // 失敗 (HTTP 400 或 401)
-        // 錯誤訊息就在 error.response.data
-        alert("登入失敗：" + error.response.data);
+        // 失敗時顯示後端錯誤訊息
+        errorMsg.value = error.response?.data || '登入失敗，請稍後再試';
+        // 同步刷新驗證碼
+        refreshAuthcode();
     }
 }
 
 // 重置表單
 const handleReset = () => {
-  loginForm.value = { username: '', password: '', authcode: '' }
+  loginForm.value = { email: '', password: '', authcode: '' }
   errorMsg.value = ''
+  refreshAuthcode()
 }
 </script>
 
@@ -61,12 +63,12 @@ const handleReset = () => {
       <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
 
       <form @submit.prevent="handleLogin">
-        <label for="username">👤 帳號：</label>
+        <label for="email">📧 Email：</label>
         <input 
-          type="text" 
-          id="username" 
-          v-model="loginForm.username" 
-          placeholder="請輸入帳號" 
+          type="email" 
+          id="email" 
+          v-model="loginForm.email" 
+          placeholder="請輸入 Email" 
           required 
         />
 
@@ -111,7 +113,6 @@ const handleReset = () => {
 </template>
 
 <style scoped>
-/* 這裡保留你原本漂亮的 CSS 並微調 */
 .login-page {
   margin: 0;
   padding: 0;
@@ -122,7 +123,7 @@ const handleReset = () => {
   align-items: center;
   height: 100vh;
   width: 100vw;
-  position: fixed; /* 確保全螢幕背景 */
+  position: fixed;
   top: 0;
   left: 0;
 }
@@ -152,7 +153,8 @@ label {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"] {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ccc;
@@ -238,5 +240,4 @@ button {
 .extra-links a:hover {
   text-decoration: underline;
 }
-
 </style>

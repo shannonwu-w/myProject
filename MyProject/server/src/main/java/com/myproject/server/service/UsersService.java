@@ -1,50 +1,67 @@
 package com.myproject.server.service;
 
+import com.myproject.server.domain.dto.UserProfileDto;
 import com.myproject.server.domain.entity.Users;
 import com.myproject.server.domain.dto.UsersDto;
 import com.myproject.server.mapper.UsersMapper;
 import com.myproject.server.repository.UsersRepository;
 import com.myproject.server.util.Hash;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
-public class UsersService{
+public class UsersService {
+
     private final UsersRepository usersRepository;
     private final UsersMapper usersMapper;
 
+    /**
+     * 查詢所有使用者
+     */
     public List<UsersDto> findAllUsers() {
         List<Users> usersList = usersRepository.findAll();
 
-        // 2. 使用 Stream 進行批量轉換
+        // 使用 Stream 批量轉換 Entity -> DTO
         return usersList.stream()
-                    .map(usersMapper::toDto)
-                    .toList();
+                .map(usersMapper::toDto)
+                .toList();
     }
-    @Transactional // 建議加上事務管理，確保資料完整性
-    public void addUser(String username, String password, String email, String role) {
-        // 1. 產生隨機鹽
+
+    @Transactional
+    public void addUser(UsersDto dto) {
+
         String salt = Hash.getSalt();
+        String passwordHash = Hash.getHash(dto.getPassword(), salt);
 
-        // 2. 產生加鹽後的雜湊值
-        String passwordHash = Hash.getHash(password, salt);
-
-        // 3. 建立 Entity 並填入資料
         Users user = new Users();
-        user.setUsername(username);
-        user.setPasswordHash(passwordHash); // 存入雜湊後的密碼
-        user.setSalt(salt);                 // 存入這筆資料專用的鹽
-        user.setEmail(email);
-        user.setRole(role);
-        user.setCreatedAt(java.time.LocalDateTime.now());
-        // 4. 存入資料庫
+        user.setEmail(dto.getEmail());
+        user.setUsername(dto.getUsername());
+        user.setPasswordHash(passwordHash);
+        user.setSalt(salt);
+        user.setRole(dto.getRole());
+        user.setPhone(dto.getPhone());
+
         usersRepository.save(user);
     }
 
+
+    public UserProfileDto getUserProfileByEmail(String email) throws Exception {
+        Users user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("使用者不存在"));
+
+        UserProfileDto dto = new UserProfileDto();
+        dto.setName(user.getUsername());
+        dto.setPhone(user.getPhone());
+        dto.setEmail(user.getEmail());
+        return dto;
+    }
+
 }
+
+

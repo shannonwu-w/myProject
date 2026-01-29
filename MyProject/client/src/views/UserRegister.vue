@@ -6,8 +6,20 @@
       <div v-if="message" class="message">{{ message }}</div>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
+       <!-- Email -->
       <div class="form-group">
-        <label for="username">👤 使用者名稱:</label>
+        <label for="email">📧 電子信箱(帳號):</label>
+        <input 
+          type="email" 
+          id="email" 
+          v-model="registerForm.email" 
+          required
+        >
+      </div>
+
+      <!-- 使用者名稱 -->
+      <div class="form-group">
+        <label for="username">👤 使用者姓名:</label>
         <input 
           type="text" 
           id="username" 
@@ -16,6 +28,7 @@
         >
       </div>
 
+      <!-- 密碼 -->
       <div class="form-group">
         <label for="password">🔒 密碼（至少6碼）:</label>
         <input 
@@ -27,16 +40,23 @@
         >
       </div>
 
+     
+
+      <!-- 電話 -->
       <div class="form-group">
-        <label for="email">📧 電子信箱:</label>
+        <label for="phone">📞 電話:</label>
         <input 
-          type="email" 
-          id="email" 
-          v-model="registerForm.email" 
-          required
+          type="tel" 
+          id="phone" 
+          v-model="registerForm.phone"
+          placeholder="09xx-xxx-xxx"
         >
       </div>
 
+      <!-- 角色選擇（隱藏或預設 user） -->
+      <input type="hidden" v-model="registerForm.role">
+
+      <!-- 註冊按鈕 -->
       <div class="form-group">
         <button type="submit" class="submit-btn">✅ 註冊</button>
       </div>
@@ -55,12 +75,13 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 定義註冊表單資料
+// 註冊表單資料
 const registerForm = ref({
   username: '',
   password: '',
   email: '',
-  role: 'user' // 預設角色為 user
+  phone: '',
+  role: 'USER'
 })
 
 const message = ref('')
@@ -72,7 +93,7 @@ const handleRegister = async () => {
     message.value = ''
     errorMessage.value = ''
     
-    // 將資料發送到後端 API
+    // 發送 POST 請求到後端 API
     const response = await axios.post('/api/register', registerForm.value)
     
     if (response.data.success) {
@@ -91,7 +112,6 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-/* 頁面整體佈局 */
 .register-page {
   margin: 0;
   padding: 0;
@@ -142,7 +162,7 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
-  box-sizing: border-box; /* 重要：防止 padding 撐開寬度 */
+  box-sizing: border-box;
   transition: box-shadow 0.3s ease;
 }
 

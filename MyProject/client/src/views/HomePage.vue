@@ -221,7 +221,7 @@ const handleLogout = async () => {
         </div>
         <div class="footer-section">
           <h3>✉️ 電子信箱</h3>
-          <p href="mailto:meowmeowcafe@gmail.com">meowmeowcafe@gmail.com</p>
+             <a href="mailto:meowmeowcafe@gmail.com"  > meowmeowcafe@gmail.com </a>
         </div>
         <div class="footer-section">
           <h3>📍 店面地址</h3>
@@ -260,6 +260,7 @@ const handleLogout = async () => {
   overflow-x: hidden; 
 
 }
+
 
 /* .home-container {
   width: 100%;
@@ -610,6 +611,11 @@ const handleLogout = async () => {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.footer-section a {
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .footer-bottom {
   text-align: center;
   margin-top: 2rem;
@@ -617,6 +623,7 @@ const handleLogout = async () => {
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   color: rgba(255, 255, 255, 0.8);
 }
+
 
 /* --- RWD --- */
 @media (max-width: 800px) {

@@ -14,7 +14,7 @@
       <h1>🌟 歡迎來到使用者頁面 🌟</h1>
       <div class="button-group">
         <button @click="navigateTo('BookingPage')">🍽️ 來去訂位</button>
-        <button @click="navigateTo('reservation/history')">📖 歷史訂位查詢</button>
+        <button @click="navigateTo('bookinghistory')">📖 歷史訂位查詢</button>
         <button @click="navigateTo('profile')">📝 查看會員資料</button>
       </div>
     </main>

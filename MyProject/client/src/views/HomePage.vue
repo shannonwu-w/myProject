@@ -220,7 +220,7 @@ const handleLogout = async () => {
         </div>
         <div class="footer-section">
           <h3>✉️ 電子信箱</h3>
-          <p>meowmeowcafe@gmail.com</p>
+          <p href="mailto:meowmeowcafe@gmail.com">meowmeowcafe@gmail.com</p>
         </div>
         <div class="footer-section">
           <h3>📍 店面地址</h3>

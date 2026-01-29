@@ -6,6 +6,7 @@
   </router-view>
 </template>
 
+
 <script setup>
 /**
  * 這裡可以放置全域的邏輯，例如：
@@ -14,10 +15,12 @@
  */
 import { onMounted } from 'vue';
 
+
 onMounted(() => {
   console.log('App 已掛載，正在初始化使用者狀態...');
 });
 </script>
+
 
 <style>
 /* 這裡放置「全域」樣式，不需要加上 scoped */
@@ -33,6 +36,7 @@ onMounted(() => {
   --bg-gradient: linear-gradient(135deg, #fffaf4, #f5e8d3);
 }
 
+
 body {
   margin: 0;
   padding: 0;
@@ -41,14 +45,17 @@ body {
   min-height: 100vh;
 }
 
+
 /* 頁面切換時的淡入淡出動畫 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
 
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 </style>
+

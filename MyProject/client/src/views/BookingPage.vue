@@ -74,7 +74,7 @@ const handleLogout = async () => {
     <nav class="navbar">
       <router-link to="/homepage">🏠 回到首頁</router-link>
       <router-link to="/userpage">👤 個人頁面</router-link>
-      <router-link to="/reservation/history">📜 訂位資料</router-link>
+      <router-link to="/bookinghistory">📜 訂位資料</router-link>
       <a href="#" @click.prevent="handleLogout">🚪 登出</a>
     </nav>
 

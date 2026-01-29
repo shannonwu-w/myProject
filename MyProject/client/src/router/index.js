@@ -34,11 +34,25 @@ const router = createRouter({
         path: '/adminpage',
         name: 'adminpage',
         component: () => import('../views/AdminPage.vue')
-        },  {
+        }, 
+        {
         path: '/bookingpage',
         name: 'bookingpage',
         component: () => import('../views/BookingPage.vue')
+        },
+        {
+        path: '/profile',
+        name: 'profile',
+        component: () => import('../views/ProfilePage.vue')
+        },
+        {
+        path: '/bookinghistory',
+        name: 'bookinghistory',
+        component: () => import('../views/BookingHistory.vue')
         }
+
+
+        
         ]
         })
 

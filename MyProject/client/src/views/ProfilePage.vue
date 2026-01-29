@@ -8,7 +8,8 @@
       </div>
     </nav>
 
-    <div class="profile-container">
+    <!-- 只在登入成功才顯示內容 -->
+    <div class="profile-container" v-if="isLoggedIn">
       <h2>👤 個人資料</h2>
       
       <div class="profile-field">
@@ -36,29 +37,43 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-// 定義使用者響應式資料
+// 使用者資料
 const user = ref({
   username: '讀取中...',
   email: '讀取中...'
 });
 
-// 模擬從 API 獲取資料
-onMounted(() => {
-  // 這裡之後可以替換成 axios.get('/api/user')
-  setTimeout(() => {
+// 是否已登入
+const isLoggedIn = ref(false);
+
+// 取得使用者登入狀態
+const checkLogin = async () => {
+  try {
+    const res = await axios.get('/api/status', { withCredentials: true });
+    // 登入成功
+    isLoggedIn.value = true;
     user.value = {
-      username: 'MeowUser123',
-      email: 'user@example.com'
+      username: res.data.username,
+      email: res.data.email || 'user@example.com' // 若 UserCert 沒 email，可自訂
     };
-  }, 500);
-});
+  } catch (err) {
+    // 401 未登入 → 跳轉登入頁
+    alert("請先登入!");
+    window.location.href = '/login';
+  }
+};
 
 // 處理按鈕點擊
 const goToChangePassword = () => {
-  // 導向更改密碼頁面
   window.location.href = '/changePassword';
 };
+
+// 頁面載入時檢查登入狀態
+onMounted(() => {
+  checkLogin();
+});
 </script>
 
 <style scoped>

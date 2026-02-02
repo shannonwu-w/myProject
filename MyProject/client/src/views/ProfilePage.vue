@@ -33,7 +33,7 @@
       </div>
       
       <div class="info-text">
-        如帳號有問題，請發 mail 至 
+        如帳號有問題，請傳送 mail 至 
         <a href="mailto:meowmeowcafe@gmail.com">meowmeowcafe@gmail.com</a>
       </div>
     </div>

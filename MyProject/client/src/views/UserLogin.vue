@@ -104,8 +104,7 @@ const handleReset = () => {
         </div>
       </form>
 
-      <div class="extra-links">
-        <router-link to="/forgotPassword">❓ 忘記密碼</router-link> | 
+      <div class="extra-links">     
         <router-link to="/register">🆕 尚未註冊？點我註冊</router-link>
       </div>
     </div>

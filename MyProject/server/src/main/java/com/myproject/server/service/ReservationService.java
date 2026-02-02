@@ -24,7 +24,7 @@ public class ReservationService {
     private final TableListRepository tableListRepository;
     private final UsersRepository usersRepository;
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void makeReservation(ReservationsDto dto, UserCert userCert) throws Exception {
 
         // 1. 查找該日期與時段已被預訂的資料

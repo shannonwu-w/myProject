@@ -6,7 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class UserCert {
-    private String email;    // 使用 email 當唯一標識
+    private String email;
     private String username;
     private String role;
+    private Long userId;
 }

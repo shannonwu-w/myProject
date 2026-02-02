@@ -21,19 +21,6 @@ public class UsersController {
 
     private final UsersService usersService;
 
-    // 查詢所有使用者
-    @GetMapping("/users")
-    public ResponseEntity<Object> findUsers() {
-        try {
-            return ResponseEntity.ok(usersService.findAllUsers());
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("success", false);
-            error.put("message", "查詢使用者失敗：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> registerUsers(@RequestBody UsersDto usersDto) {
         Map<String, Object> result = new HashMap<>();

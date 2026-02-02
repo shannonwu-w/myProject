@@ -1,14 +1,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+
 
 const router = useRouter()
 
 // --- 狀態管理 ---
-const userCert = ref(null) // 存放使用者憑證 (例如 username)
-const userDto = ref({ role: '' }) // 存放權限資訊 (例如 USER 或 ADMIN)
+const userCert = ref(null) //存放使用者憑證 (例如 username)
+const role = ref('') // 存放權限資訊 (例如 USER 或 ADMIN)
 const isScrolled = ref(false)
+const username = ref('訪客')
+
 
 // --- 資料清單 (將原本重複的 HTML 轉為資料驅動) ---
 const catFamily = ref([
@@ -74,36 +76,23 @@ const menuData = ref([
 ])
 
 // --- 邏輯處理 ---
-onMounted(async () => {
-  window.addEventListener('scroll', handleScroll)
-  checkLoginStatus()
-})
+ onMounted(async () => {
+  checkLoginStatus() })
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+const checkLoginStatus = () => {
+  
+    
+    const stored = localStorage.getItem('userCert');
+        username.value = 'userCert.username'; 
 
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 100
-}
-
-const checkLoginStatus = async () => {
-  try {
-    // 假設後端有一個 API 會回傳當前的 session 資料
-    const response = await axios.get('/api/status')
-    if (response.data && response.data.username) {
-      userCert.value = response.data
-      
-      // 同步更新 userDto 的角色資訊，讓下方的按鈕判斷能運作
-      userDto.value.role = response.data.role 
-      
-      console.log("登入成功，目前使用者:", userCert.value.username)
+    if (stored) {
+        userCert.value = JSON.parse(stored)
+        username.value = userCert.value.username || '訪客'
+        role.value = userCert.value.role || ''
+        console.log('登入使用者：', userCert.value)
     }
-  } catch (error) {
-    userCert.value = null
-    userDto.value.role = ''
-    console.log("狀態檢查：未登入"+error)
-  }
+    
+  
 }
 
 const navigateTo = (path) => {
@@ -112,12 +101,12 @@ const navigateTo = (path) => {
 
 const handleLogout = async () => {
   try{
-    const response = await axios.get('api/logout');
+    // const response = await axios.get('api/logout');
     localStorage.removeItem('userCert');
     alert("🐾 登出成功，期待下次見面！");
     router.push('/login');
 
-    console(response);
+    // console(response);
 
 
   }catch(error){
@@ -142,14 +131,14 @@ const handleLogout = async () => {
           </template>
 
           <template v-else>
-            <span class="user-name-tag">您好，{{ userCert.username }}</span>
+            <span class="user-name-tag">您好，{{username}}</span>
             
-            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/userpage')">會員中心</button>
-            <button v-if="userDto.role === 'USER'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
+            <button v-if="role === 'USER'" class="nav-btn" @click="navigateTo('/userpage')">會員中心</button>
+            <button v-if="role === 'USER'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
 
-            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/adminpage')">後台管理</button>
-            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/userpage')">使用者頁面</button>
-            <button v-if="userDto.role === 'ADMIN'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
+            <button v-if="role === 'ADMIN'" class="nav-btn" @click="navigateTo('/adminpage')">後台管理</button>
+            <button v-if="role === 'ADMIN'" class="nav-btn" @click="navigateTo('/userpage')">使用者頁面</button>
+            <button v-if="role === 'ADMIN'" class="nav-btn" @click="navigateTo('/bookingpage')">訂位</button>
 
 
             <button class="nav-btn" @click="handleLogout">登出</button>

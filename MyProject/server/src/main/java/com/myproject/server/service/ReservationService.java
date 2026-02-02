@@ -5,6 +5,7 @@ import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.domain.entity.TableList;
 import com.myproject.server.domain.entity.Users;
+import com.myproject.server.mapper.ReservationsMapper;
 import com.myproject.server.repository.ReservationRepository;
 import com.myproject.server.repository.TableListRepository;
 import com.myproject.server.repository.UsersRepository;
@@ -23,6 +24,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TableListRepository tableListRepository;
     private final UsersRepository usersRepository;
+    private final ReservationsMapper reservationsMapper;
 
     @Transactional
     public void makeReservation(ReservationsDto dto, UserCert userCert) throws Exception {
@@ -32,32 +34,25 @@ public class ReservationService {
 
         // 2. 取得已被佔用的桌號
         Set<Long> reservedTableIds = existing.stream()
-                .map(r -> r.getTableList().getTableId())
+                .map(Reservations::getTableId)
                 .collect(Collectors.toSet());
 
-        // 3. 根據人數篩選可用桌位 (0: 小桌, 1: 大桌)
+        // 3. 根據人數篩選可用桌位
         List<TableList> candidates = findAvailableTables(dto.getPeople(), reservedTableIds);
         if (candidates.isEmpty()) {
             throw new Exception("抱歉，該時段已無適合人數的空位");
         }
 
-        // 4. 將 DTO 轉換為 Entity
-        Reservations entity = new Reservations();
-        entity.setName(dto.getName());
-        entity.setPeople(dto.getPeople());
-        entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        entity.setResvDate(dto.getDate());
-        entity.setTimeSlot(dto.getTimeSlot());
-        entity.setMessage(dto.getMessage());
+        // 4. DTO -> Entity
+        Reservations entity = reservationsMapper.toEntity(dto);
 
         // 5. 分配桌位
-        entity.setTableList(candidates.get(0));
+        entity.setTableId(candidates.get(0).getTableId());
 
         // 6. 設定使用者
-        Users user = usersRepository.findByEmail(userCert.getEmail())
+        Users user = usersRepository.findByUserId(userCert.getUserId())
                 .orElseThrow(() -> new Exception("使用者不存在"));
-        entity.setUsers(user);
+        entity.setUserId(user.getUserId());
 
         // 7. 儲存
         reservationRepository.save(entity);
@@ -74,4 +69,14 @@ public class ReservationService {
                 .filter(t -> !reservedTableIds.contains(t.getTableId()))
                 .collect(Collectors.toList());
     }
+
+    public List<ReservationsDto> getMyReservations(Long userId) {
+        List<Reservations> list = reservationRepository.findByUserId(userId);
+
+        // Entity -> DTO
+        return list.stream()
+                .map(reservationsMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

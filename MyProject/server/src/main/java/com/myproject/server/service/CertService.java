@@ -18,11 +18,8 @@ public class CertService {
     @Autowired
     private UsersRepository usersRepository;
 
-    /**
-     * 用 email 登入並簽發 UserCert
-     */
     public UserCert getCert(String email, String password) throws CertException {
-        // 1. 查詢使用者 (email 唯一)
+        // 1. 查詢使用者(用email去查)
         Optional<Users> userOpt = usersRepository.findByEmail(email);
         Users user = userOpt.orElseThrow(() -> new UserNotFoundException("查無此人"));
 
@@ -32,7 +29,7 @@ public class CertService {
             throw new PasswordInvalidException("密碼錯誤");
         }
 
-        // 3. 簽發憑證，用 email 當唯一標識
-        return new UserCert(user.getEmail(), user.getUsername(), user.getRole());
+        // 3. 簽發憑證
+        return new UserCert(user.getEmail(), user.getUsername(), user.getRole(),user.getUserId());
     }
 }

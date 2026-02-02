@@ -15,4 +15,5 @@ public class ReservationsDto {
     private String date;
     private String timeSlot;
     private String message;
+    private Long userId;
 }

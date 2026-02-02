@@ -25,7 +25,6 @@ public class LoginController {
         if (sessionAuthcode == null || !sessionAuthcode.equalsIgnoreCase(loginDto.getAuthcode())) {
             return ResponseEntity.badRequest().body("驗證碼錯誤或已過期");
         }
-
         try {
             // 2. 執行驗證邏輯 (使用 email)
             UserCert userCert = certService.getCert(loginDto.getEmail(), loginDto.getPassword());
@@ -38,20 +37,20 @@ public class LoginController {
 
         } catch (CertException e) {
             // 5. 驗證失敗：回傳 401 並附帶錯誤訊息
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    @GetMapping("/status")
-    public ResponseEntity<?> getStatus(HttpSession session){
-        UserCert cert = (UserCert) session.getAttribute("userCert");
-        if (cert != null) {
-            // 有登入，直接回傳憑證物件
-            return ResponseEntity.ok(cert);
-        } else {
-            // 沒登入，回傳 401
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未登入");
-        }
-    }
+//    @GetMapping("/status")
+//    public ResponseEntity<?> getStatus(HttpSession session){
+//        UserCert cert = (UserCert) session.getAttribute("userCert");
+//        if (cert != null) {
+//            // 有登入，直接回傳憑證物件
+//            return ResponseEntity.ok(cert);
+//        } else {
+//            // 沒登入，回傳 401
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("未登入");
+//        }
+//    }
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();  // 清空 session 資料

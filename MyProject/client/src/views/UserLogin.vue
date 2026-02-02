@@ -34,6 +34,7 @@ const handleLogin = async () => {
         // 登入成功，取得 UserCert
         const cert = response.data; 
         console.log("歡迎！您的角色是：" + cert.role);
+        localStorage.setItem('userCert', JSON.stringify(cert));
         
         // 根據角色跳轉頁面
         if (cert.role === 'admin') router.push('/adminpage');
@@ -45,7 +46,10 @@ const handleLogin = async () => {
         // 同步刷新驗證碼
         refreshAuthcode();
     }
+
+    
 }
+
 
 // 重置表單
 const handleReset = () => {

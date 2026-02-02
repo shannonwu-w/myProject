@@ -43,13 +43,12 @@ public class Reservations {
     @Column(name = "MESSAGE", length = 200)
     private String message;
 
-    @ManyToOne
-    @JoinColumn(name = "TABLE_ID", nullable = false)
-    private TableList tableList; // 對應 TABLE_ID NUMBER
+    @Column(name = "USER_ID")
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private Users users; // 對應 USER_ID NUMBER
+    @Column(name = "TABLE_ID", nullable = false)
+    private Long tableId;
+
 
     @CreationTimestamp
     @Column(name = "CREATED_AT", updatable = false)
@@ -59,3 +58,12 @@ public class Reservations {
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 }
+
+//    @ManyToOne
+//    @JoinColumn(name = "TABLE_ID", nullable = false)
+//    private TableList tableList; // 對應 TABLE_ID NUMBER
+//
+//    @ManyToOne
+//    @JoinColumn(name = "USER_ID", nullable = false)
+//    private Users users;
+//

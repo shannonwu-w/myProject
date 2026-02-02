@@ -7,8 +7,11 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,4 +36,13 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
-}
+    @PostMapping("/history")
+    public List<ReservationsDto> myReservations(Long userId) {
+
+        return reservationService.getMyReservations(userId);
+
+
+    }
+
+    }
+

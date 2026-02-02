@@ -2,15 +2,16 @@
   <div class="user-page">
     <nav class="navbar">
       <div class="user-info">
-        <a>👤 {{ user.username }} 您好</a>
+        <a>👤 {{ username }} 您好</a>
       </div>
       <div class="nav-links">
         <router-link to="/homepage">🏠 回首頁</router-link>
-        <a href="#" @click.prevent="handleLogout">🚪 登出</a>
+        <a href="/homepage" @click.prevent="handleLogout">🚪 登出</a>
       </div>
     </nav>
 
     <main class="container">
+
       <h1>🌟 歡迎來到會員中心 🌟</h1>
       <div class="button-group">
         <button @click="navigateTo('BookingPage')">🍽️ 來去訂位</button>
@@ -25,40 +26,24 @@
 import { onMounted,ref } from 'vue'
 
 import { useRouter } from 'vue-router';
-import axios from 'axios'
 
-const userDto = ref({ role: '' })
-const user = ref ({
-  username:''
-})
+
+const role = ref({ role: '' })
+const username = ref ()
 
 
 onMounted(async () => {
-  try {
-    // 1. 向後端詢問目前的 Session 狀態
-    const response = await axios.get('/api/status');
-
-    // 2. 嚴格檢查：必須有資料且 role 不為空
-    if (response.data && response.data.role) {
-      userDto.value = response.data;
-      console.log("驗證成功，歡迎進入");
-      user.value ={
-        username: response.data.username
+ const storedToken = localStorage.getItem('userCert');
+    username.value = 'userCert.username'; 
+    role.value='userCert.role'
+    if (storedToken) {
+    const userCert = JSON.parse(storedToken);
+    username.value = userCert.username || '訪客';
+  } else {
+  username.value = '訪客';
+  alert('請先登入');
+  router.push('/login'); 
 }
-    } else {
-      // 如果後端回傳 null 或空物件，手動丟出錯誤進入 catch
-      throw Error("No Session");
-    }
-  } catch (error) {
-    // 3. 只要失敗（沒登入、過期、或是連線錯誤）就執行這裡
-    console.error("狀態檢查：未登入", error);
-    
-    // 顯示警示視窗
-    alert("⚠️ 請先登入系統！");
-    
-    // 強制跳轉回登入頁
-    router.push('/login');
-  }
 });
 
 const router = useRouter();
@@ -74,12 +59,9 @@ const navigateTo = (path) => {
 // 登出功能
 const handleLogout = async () => {
   try{
-    const response = await axios.get('api/logout');
     localStorage.removeItem('userCert');
     alert("🐾 登出成功，期待下次見面！");
     router.push('/login');
-
-    console(response);
 
 
   }catch(error){

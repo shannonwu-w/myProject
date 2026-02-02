@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
@@ -8,7 +8,6 @@ axios.defaults.withCredentials = true
 const router = useRouter()
 const isLoggedIn = ref(false)
 const memberProfile = ref(null)
-
 
 // =======================
 // 是否自動帶入會員資料
@@ -39,51 +38,35 @@ const minDate = today.toISOString().split('T')[0]
 const maxDate = nextMonth.toISOString().split('T')[0]
 
 // =======================
-// 取得會員資料
+// 初始化會員資料 & 登入驗證
 // =======================
-const fetchUserProfile = async () => {
+
+onMounted(async () => {
   try {
     const res = await axios.get('/api/profile')
-    if (res.data) {
-      memberProfile.value = res.data
-
-      form.name  = res.data.username || ''
-      form.phone = res.data.phone || ''
-      form.email = res.data.email || ''
-    }
-  } catch (error) {
-    console.error('取得會員資料失敗', error)
+    isLoggedIn.value = true
+    memberProfile.value = res.data
+  } catch (err) {
+    alert('請先登入')
+    router.push('/login')
+    console.log(err)
   }
-}
+})
+
 
 
 // =======================
 // 監聽是否勾選自動帶入
 // =======================
-watch(autoFill, async (checked) => {
-  if (checked && !memberProfile.value) {
-    await fetchUserProfile()
-  }
-})
-
-// =======================
-// 頁面初始化（登入驗證）
-// =======================
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/status')
-    if (response.data && response.data.role) {
-      isLoggedIn.value = true
-    } else {
-      isLoggedIn.value = false
-       alert("請先登入");
-      router.push('/login')
-     
-    }
-  } catch (error) {
-    console.error('驗證失敗:', error)
-    alert("請先登入");
-    router.push('/login')
+watch(autoFill, (checked) => {
+  if (checked && memberProfile.value) {
+    form.name  = memberProfile.value.username || ''
+    form.phone = memberProfile.value.phone || ''
+    form.email = memberProfile.value.email || ''
+  } else if (!checked) {
+    form.name  = ''
+    form.phone = ''
+    form.email = ''
   }
 })
 
@@ -106,10 +89,12 @@ const submitReservation = async () => {
 const handleLogout = async () => {
   try {
     await axios.get('/api/logout')
-    router.push('/login')
-  } catch {
-    router.push('/login')
+  } catch(error) {
+      console.log(error);
   }
+  // 清除 localStorage
+  localStorage.removeItem('userCert')
+  router.push('/login')
 }
 </script>
 
@@ -143,7 +128,7 @@ const handleLogout = async () => {
             <option value="">請選擇</option>
             <option v-for="n in 5" :key="n+1" :value="n+1">{{ n+1 }} 位</option>
           </select>
-           <div class="notes">備註：七位(含)以上的客人請打電話預約，謝謝🙏 <br> 聯絡專線：(02)2345-6789</div>
+          <div class="notes">備註：七位(含)以上的客人請打電話預約，謝謝🙏 <br> 聯絡專線：(02)2345-6789</div>
         </div>
 
         <div class="form-group">
@@ -169,8 +154,6 @@ const handleLogout = async () => {
             <option value="16:00">16:00</option>
             <option value="17:00">17:00</option>
             <option value="18:00">18:00</option>
-
-
           </select>
         </div>
 
@@ -198,28 +181,27 @@ const handleLogout = async () => {
       </form>
     
       <div class="notice">
-    <h2>🛎️ 用餐注意事項</h2>
-    <ul>
-      <li>⏰ 預約保留 10 分鐘，逾時將取消訂位。</li>
-      <li>⏳ 為確保用餐品質，請準時抵達。</li>
-      <li>📞 若需更改或取消訂位，請提前一天通知。</li>
-      <li>🍾 自備酒水將酌收開瓶費。</li>
-      <li>📝 如有其他特殊需求，請於備註欄位填寫或來電洽詢。</li>
-    </ul>
-  </div>
-  </div>
+        <h2>🛎️ 用餐注意事項</h2>
+        <ul>
+          <li>⏰ 預約保留 10 分鐘，逾時將取消訂位。</li>
+          <li>⏳ 為確保用餐品質，請準時抵達。</li>
+          <li>📞 若需更改或取消訂位，請提前一天通知。</li>
+          <li>🍾 自備酒水將酌收開瓶費。</li>
+          <li>📝 如有其他特殊需求，請於備註欄位填寫或來電洽詢。</li>
+        </ul>
+      </div>
+    </div>
   
-  <div class="footer">
-  <p>☎️ 連絡電話：(02)2345-6789</p>
-  <p>✉️ 電子信箱：meowmeowcafe@gmail.com</p>
-  <p>🏠 地址：台北市大安區咖啡街123號(捷運大安站2號出口站步行5分鐘)</p>
-
-</div>
-</div>
+    <div class="footer">
+      <p>☎️ 連絡電話：(02)2345-6789</p>
+      <p>✉️ 電子信箱：meowmeowcafe@gmail.com</p>
+      <p>🏠 地址：台北市大安區咖啡街123號(捷運大安站2號出口站步行5分鐘)</p>
+    </div>
+  </div>
 </template>
 
-
 <style scoped>
+/* 你的原本樣式保留 */
 .reservation-page {
   background: linear-gradient(135deg, #d4a574, #8b4513);
   min-height: 100vh;
@@ -238,7 +220,6 @@ const handleLogout = async () => {
   font-weight: 600;
 }
 
-
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -247,8 +228,7 @@ const handleLogout = async () => {
   margin: 0;      
   padding: 0;
   cursor: pointer;
- 
-   } 
+} 
 
 .container {
   background: #fff9f0;
@@ -266,8 +246,6 @@ h1 {
 .form-group {
   margin-bottom: 16px;
   width: 100%;
-
-
 }
 
 .notes{

@@ -52,36 +52,42 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import router from '@/router';
 
-// 假設從父組件或 API 取得使用者名稱
+
 const username = ref('訪客');
 const reservations = ref([]);
 
+
 // 模擬獲取資料
 onMounted(() => {
-  // 實務上會使用 axios.get('/api/reservations')
-  username.value = '張小明'; 
-  reservations.value = [
-    { 
-      reservationId: 101, 
-      date: '2026-02-01', 
-      timeSlots: { timeSlot: '14:00' }, 
-      message: '慶生' 
-    },
-    { 
-      reservationId: 102, 
-      date: '2023-10-01', 
-      timeSlots: { timeSlot: '18:00' }, 
-      message: '' 
-    }
-  ];
+   axios.get('/api/reservation/history')
+  reservations.value = [];
+
+  
+  const storedToken = localStorage.getItem('userCert');
+    username.value = 'userCert.username'; 
+    if (storedToken) {
+    const userCert = JSON.parse(storedToken);
+    username.value = userCert.username || '訪客';
+  } else {
+  username.value = '訪客';
+  alert('請先登入');
+  router.push('/login'); 
+  
+}
+
+  
+  console.log(storedToken);
+
 });
 
 // 判斷日期是否為明天（含）以後
 const isTomorrowOrLater = (dateStr) => {
   const reservationDate = new Date(dateStr);
   const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setDate(tomorrow.getDate());
   tomorrow.setHours(0, 0, 0, 0);
   
   return reservationDate >= tomorrow;

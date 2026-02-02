@@ -30,7 +30,7 @@ public class ReservationService {
     public void makeReservation(ReservationsDto dto, UserCert userCert) throws Exception {
 
         // 1. 查找該日期與時段已被預訂的資料
-        List<Reservations> existing = reservationRepository.findByResvDateAndTimeSlot(dto.getDate(), dto.getTimeSlot());
+        List<Reservations> existing = reservationRepository.findByResvDateAndTimeSlot(dto.getResvDate(), dto.getTimeSlot());
 
         // 2. 取得已被佔用的桌號
         Set<Long> reservedTableIds = existing.stream()
@@ -45,7 +45,7 @@ public class ReservationService {
 
         // 4. DTO -> Entity
         Reservations entity = reservationsMapper.toEntity(dto);
-        entity.setResvDate(dto.getDate());
+        entity.setResvDate(dto.getResvDate());
         entity.setTimeSlot(dto.getTimeSlot());
 
         // 5. 分配桌位

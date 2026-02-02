@@ -14,7 +14,7 @@ public class ReservationsDto {
     private Integer people;
     private String email;
     private String phone;
-    private LocalDate date;
+    private LocalDate resvDate;
     private String timeSlot;
     private String message;
     private Long userId;

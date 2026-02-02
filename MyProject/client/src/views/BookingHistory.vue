@@ -32,8 +32,7 @@
                 v-if="isTomorrowOrLater(r.resvDate)" 
                 @click="deleteReservation(r.reservationId)" 
                 class="btn-danger"
-              >
-                🗑 取消訂位
+              >取消訂位
               </button>
               <span v-else class="text-muted">不可取消</span>
             </td>
@@ -42,7 +41,9 @@
       </table>
 
       <div style="text-align: center;">
-        <router-link to="/userpage" class="btn-secondary">🏠 回使用者頁</router-link>
+        <router-link to="/userpage" class="btn-secondary">🏠 回會員中心</router-link>
+        <!-- <router-link to="/homepage" class="btn-secondary">🏠 回首頁</router-link> -->
+
       </div>
     </div>
 
@@ -79,6 +80,7 @@ onMounted(async () => {
       params: { userId: userId.value }
     });
     reservations.value = res.data;
+    console.log("後端回傳的資料內容:", res.data);
   } catch (e) {
     console.error(e);
     alert('取得訂位紀錄失敗');

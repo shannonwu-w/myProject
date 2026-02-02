@@ -14,6 +14,7 @@
       <table v-else role="table">
         <thead>
           <tr>
+            <th>訂位人</th>
             <th>日期</th>
             <th>時段</th>
             <th>備註</th>
@@ -22,12 +23,13 @@
         </thead>
         <tbody>
           <tr v-for="r in reservations" :key="r.reservationId">
-            <td>{{ r.date }}</td>
-            <td>{{ r.timeSlots.timeSlot }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.resvDate }}</td>
+            <td>{{ r.timeSlot }}</td>
             <td>{{ r.message && r.message.trim() !== '' ? r.message : '無' }}</td>
             <td>
               <button 
-                v-if="isTomorrowOrLater(r.date)" 
+                v-if="isTomorrowOrLater(r.resvDate)" 
                 @click="deleteReservation(r.reservationId)" 
                 class="btn-danger"
               >
@@ -58,31 +60,30 @@ import router from '@/router';
 
 const username = ref('訪客');
 const reservations = ref([]);
-
-
-// 模擬獲取資料
-onMounted(() => {
-   axios.get('/api/reservation/history')
-  reservations.value = [];
-
-  
+const userId = ref('');
+onMounted(async () => {
   const storedToken = localStorage.getItem('userCert');
-    username.value = 'userCert.username'; 
-    if (storedToken) {
-    const userCert = JSON.parse(storedToken);
-    username.value = userCert.username || '訪客';
-  } else {
-  username.value = '訪客';
-  alert('請先登入');
-  router.push('/login'); 
-  
-}
 
-  
-  console.log(storedToken);
+  if (!storedToken) {
+    alert('請先登入');
+    router.push('/login');
+    return;
+  }
 
+  const userCert = JSON.parse(storedToken);
+  username.value = userCert.username || '訪客';
+  userId.value = userCert.userId;
+
+  try {
+    const res = await axios.get('/api/reservation/history', {
+      params: { userId: userId.value }
+    });
+    reservations.value = res.data;
+  } catch (e) {
+    console.error(e);
+    alert('取得訂位紀錄失敗');
+  }
 });
-
 // 判斷日期是否為明天（含）以後
 const isTomorrowOrLater = (dateStr) => {
   const reservationDate = new Date(dateStr);

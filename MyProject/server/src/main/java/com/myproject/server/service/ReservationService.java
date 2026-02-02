@@ -45,6 +45,8 @@ public class ReservationService {
 
         // 4. DTO -> Entity
         Reservations entity = reservationsMapper.toEntity(dto);
+        entity.setResvDate(dto.getDate());
+        entity.setTimeSlot(dto.getTimeSlot());
 
         // 5. 分配桌位
         entity.setTableId(candidates.get(0).getTableId());

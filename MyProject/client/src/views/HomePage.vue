@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 
@@ -89,7 +89,7 @@ const checkLoginStatus = () => {
         userCert.value = JSON.parse(stored)
         username.value = userCert.value.username || '訪客'
         role.value = userCert.value.role || ''
-        console.log('登入使用者：', userCert.value)
+        // console.log('登入使用者：', userCert.value)
     }
     
   

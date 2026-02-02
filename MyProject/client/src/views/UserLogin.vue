@@ -33,7 +33,7 @@ const handleLogin = async () => {
 
         // 登入成功，取得 UserCert
         const cert = response.data; 
-        console.log("歡迎！您的角色是：" + cert.role);
+        // console.log("歡迎！您的角色是：" + cert.role);
         localStorage.setItem('userCert', JSON.stringify(cert));
         
         // 根據角色跳轉頁面

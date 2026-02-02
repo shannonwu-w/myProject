@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -34,8 +35,8 @@ public class Reservations {
     @Column(name = "PHONE", nullable = false, length = 20)
     private String phone;
 
-    @Column(name = "RESV_DATE", nullable = false, length = 10)
-    private String resvDate;
+    @Column(name = "RESV_DATE", nullable = false)
+    private LocalDate resvDate;
 
     @Column(name = "TIME_SLOT", nullable = false)
     private String timeSlot;

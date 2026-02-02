@@ -36,9 +36,8 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
-    @PostMapping("/history")
-    public List<ReservationsDto> myReservations(Long userId) {
-
+    @GetMapping("/history")
+    public List<ReservationsDto> myReservations(@RequestParam Long userId) {
         return reservationService.getMyReservations(userId);
 
 

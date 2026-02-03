@@ -1,18 +1,15 @@
 package com.myproject.server.controller;
 
-import com.myproject.server.domain.dto.UpdatePasswordDto;
 import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.dto.UserProfileDto;
 import com.myproject.server.domain.dto.UsersDto;
-import com.myproject.server.domain.entity.Users;
 import com.myproject.server.service.UsersService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -58,9 +55,13 @@ public class UsersController {
         if (userCert == null) throw new RuntimeException("未登入");
 
         Long userId = userCert.getUserId(); // 從 session 拿登入使用者 id
-        return usersService.updateUser(userId, dto);
+        return usersService.updateUserPassword(userId, dto);
     }
 
+    @GetMapping("/admin/all-users")
+    public List<UsersDto> allUserList(){
+      return usersService.findAllUsers();
+    }
 
 
 

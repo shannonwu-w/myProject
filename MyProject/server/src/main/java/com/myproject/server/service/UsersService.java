@@ -56,7 +56,7 @@ public class UsersService {
         return dto;
     }
     @Transactional
-    public UsersDto updateUser(Long userId, UsersDto dto) {
+    public UsersDto updateUserPassword(Long userId, UsersDto dto) {
 
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("使用者不存在"));
@@ -76,6 +76,8 @@ public class UsersService {
         usersRepository.save(user); // JPA 會自動做 UPDATE
         return dto;
     }
+
+
 
 
 

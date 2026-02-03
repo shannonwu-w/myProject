@@ -44,12 +44,16 @@
     <div v-if="selectedUser" class="container">
       <h2>🔧 修改使用者資料</h2>
       <div class="form-group">
-        <label>帳號：</label>
+        <label>使用者名稱：</label>
         <input v-model="selectedUser.username" type="text" required />
       </div>
       <div class="form-group">
-        <label>電子信箱：</label>
+        <label>帳號(電子信箱)：</label>
         <input v-model="selectedUser.email" type="email" required />
+      </div>
+      <div class="form-group">
+        <label>電話：</label>
+        <input v-model="selectedUser.phone" type="phone" required />
       </div>
       <div class="form-group">
         <label>身分：</label>
@@ -110,9 +114,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import router from '@/router';
-
-
-// --- 資料狀態 (State) ---
+import axios from 'axios';
+const userrole = ref();
 const currentUser = ref({ role: 'admin' }); // 應從 API 或 Store 取得
 const userList = ref([]);
 const message = ref('');
@@ -121,6 +124,7 @@ const newUser = ref({
   username: '',
   email: '',
   password: '',
+  phone:'',
   role: 'user'
 });
 
@@ -134,6 +138,27 @@ onMounted(() => {
 
 
 // --- 方法 (Methods) ---
+
+onMounted(async () => {
+      const storedToken = localStorage.getItem('userCert');
+      
+
+      if (!storedToken) {
+          alert('請先登入');
+          router.push('/login');       
+      }
+      const userCert = JSON.parse(storedToken);
+      userrole.value = userCert.role;
+      
+         
+          if( userrole.value!== 'ADMIN'){
+              alert('您沒有權限');
+              router.push('/homepage');
+                    }      
+         
+ 
+ 
+});
 const checkAuth = () => {
   if (currentUser.value.role !== 'admin') {
     alert("⚠️ 您沒有管理員權限，將返回使用者首頁");
@@ -143,12 +168,15 @@ const checkAuth = () => {
 
 
 const fetchUsers = async () => {
-  // 模擬 API 取得資料
-  // const res = await axios.get('/api/admin/users');
-  // userList.value = res.data;
-  userList.value = [
-    { userId: 1, username: '喵喵', email: 'cat@meow.com',phone: '0912345678', role: 'user' }
-  ];
+    try{
+        const res = await axios.get('/api/admin/all-users');
+        userList.value = res.data;
+    }
+    catch (error) {
+        console.error('取得資料失敗:', error);
+        message.value = '無法載入使用者資料，請稍後再試。';
+  }
+
 };
 
 
@@ -185,13 +213,25 @@ const addUser = async () => {
 
 
 const handleLogout = () => {
-  console.log('執行登出邏輯');
+  try{
+    localStorage.removeItem('userCert');
+    alert("🐾 登出成功");
+    router.push('/homepage');
+
+  }catch(error){
+    console.error("登出請求失敗:", error);
+    localStorage.clear();
+    router.push('/homepage');
+   
+  }
 };
 
 
 const goTo = (path) => {
  router.push(`/${path}`);
 };
+
+
 </script>
 
 
@@ -246,12 +286,18 @@ th {
 }
 .button:hover { transform: scale(1.05); }
 .button.delete { background-color: #B22222; }
-.form-group { margin-bottom: 1rem; }
+.form-group { 
+    margin-bottom: 1rem;
+    /* width: 500px; */
+}
 input, select {
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  width: 100%;
+    box-sizing: border-box; 
+    width: 100%;           
+    height: 40px;       
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
 }
 .hint { font-size: 0.9rem; color: #555; }
 .footer { color: #E8D3B2; padding: 2rem; }

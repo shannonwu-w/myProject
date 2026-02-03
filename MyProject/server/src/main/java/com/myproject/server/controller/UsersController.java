@@ -1,5 +1,6 @@
 package com.myproject.server.controller;
 
+import com.myproject.server.domain.dto.UpdatePasswordDto;
 import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.dto.UserProfileDto;
 import com.myproject.server.domain.dto.UsersDto;
@@ -50,6 +51,20 @@ public class UsersController {
         String email = cert.getEmail();
         return usersService.getUserProfileByEmail(email);
     }
+
+    @PostMapping("/reset-password")
+    public UsersDto updateUser(@RequestBody UsersDto dto, HttpSession session) {
+        UserCert userCert = (UserCert) session.getAttribute("userCert");
+        if (userCert == null) throw new RuntimeException("未登入");
+
+        Long userId = userCert.getUserId(); // 從 session 拿登入使用者 id
+        return usersService.updateUser(userId, dto);
+    }
+
+
+
+
+
 
 
 

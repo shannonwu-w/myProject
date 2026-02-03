@@ -9,10 +9,8 @@ import com.myproject.server.util.Hash;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @AllArgsConstructor
 @Service
@@ -57,10 +55,29 @@ public class UsersService {
         dto.setEmail(user.getEmail());
         return dto;
     }
+    @Transactional
+    public UsersDto updateUser(Long userId, UsersDto dto) {
 
-    public Users changeUserPassword(Users user){
-        return usersRepository.save(user);
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("使用者不存在"));
+
+        // 可修改的欄位
+//        user.setUsername(dto.getUsername());
+//        user.setPhone(dto.getPhone());
+
+        // 如果有輸入新密碼，才更新
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            String salt = Hash.getSalt();
+            String passwordHash = Hash.getHash(dto.getPassword(), salt);
+            user.setSalt(salt);
+            user.setPasswordHash(passwordHash);
+        }
+
+        usersRepository.save(user); // JPA 會自動做 UPDATE
+        return dto;
     }
+
+
 
 }
 

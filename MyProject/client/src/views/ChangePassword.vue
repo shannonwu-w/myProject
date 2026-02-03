@@ -7,8 +7,6 @@
       <div v-if="successMsg" class="success-msg">✅ {{ successMsg }}</div>
 
       <form @submit.prevent="submitForm">
-        <input type="hidden" v-model="token" />
-
         <label for="newPassword">🔐 新密碼：</label>
         <input type="password" id="newPassword" v-model="newPassword" required />
 
@@ -16,24 +14,31 @@
         <input type="password" id="confirmPassword" v-model="confirmPassword" required />
 
         <button class="btn" type="submit">💾 確認更新</button>
-        
       </form>
+      
       <a href="userpage">回會員中心</a>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import router from '@/router';
 
-
-const token = ref('');
 const newPassword = ref('');
 const confirmPassword = ref('');
 const errorMsg = ref('');
 const successMsg = ref('');
+
+// 只用 localStorage 判斷是否登入
+onMounted(() => {
+  const storedToken = localStorage.getItem('userCert');
+  if (!storedToken) {
+    alert('請先登入');
+    router.push('/login');
+  }
+});
 
 const submitForm = async () => {
   if (newPassword.value.length < 6) {
@@ -41,6 +46,7 @@ const submitForm = async () => {
     successMsg.value = '';
     return;
   }
+
   if (newPassword.value !== confirmPassword.value) {
     errorMsg.value = '⚠️ 兩次輸入的新密碼不一致！';
     successMsg.value = '';
@@ -48,7 +54,13 @@ const submitForm = async () => {
   }
 
   try {
-    const res = await axios.post('/resetPassword', { token: token.value, newPassword: newPassword.value }, { withCredentials: true });
+    // 前端不用傳 userId，後端 session 會拿
+    const res = await axios.post(
+      '/api/reset-password',
+      { password: newPassword.value },
+      { withCredentials: true } // 帶 cookie 給後端 session
+    );
+
     successMsg.value = res.data.message || '密碼更新成功！';
     errorMsg.value = '';
     newPassword.value = '';
@@ -57,23 +69,10 @@ const submitForm = async () => {
     errorMsg.value = err.response?.data?.message || '更新密碼失敗，請稍後再試。';
     successMsg.value = '';
   }
-}
-
-
-
-onMounted(() => {
-  const storedToken = localStorage.getItem('userCert')
-
-  if (!storedToken) {
-    alert('請先登入')
-    router.push('/login')
-  }
-  })
+};
 </script>
 
 <style scoped>
-
-
 .page-wrapper {
   position: fixed;
   top: 50%;
@@ -93,7 +92,6 @@ onMounted(() => {
 
 a {
   color: #000;
-
 }
 
 h2 {
@@ -119,13 +117,11 @@ input[type="password"] {
   font-size: 16px;
   background-color: #fff9f3;
   transition: border-color 0.3s;
-  
 }
 
 input[type="password"]:focus {
   border-color: #8B4513;
   outline: none;
-  
 }
 
 .btn {
@@ -169,16 +165,8 @@ input[type="password"]:focus {
   border: 1px solid #a2f0c2;
 }
 
-
-
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

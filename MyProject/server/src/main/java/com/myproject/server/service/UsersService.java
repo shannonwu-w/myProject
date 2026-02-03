@@ -62,6 +62,10 @@ public class UsersService {
         return dto;
     }
 
+    public Users changeUserPassword(Users user){
+        return usersRepository.save(user);
+    }
+
 }
 
 

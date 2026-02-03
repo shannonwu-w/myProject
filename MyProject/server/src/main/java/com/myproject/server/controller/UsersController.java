@@ -22,19 +22,20 @@ public class UsersController {
     private final UsersService usersService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerUsers(@RequestBody UsersDto usersDto) {
+    public Map<String, Object> registerUsers(@RequestBody UsersDto usersDto) {
         Map<String, Object> result = new HashMap<>();
         try {
             usersService.addUser(usersDto);
 
             result.put("success", true);
             result.put("message", "註冊成功");
-            return ResponseEntity.ok(result);
+
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "註冊失敗：" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+
         }
+        return  result;
     }
 
 
@@ -49,6 +50,7 @@ public class UsersController {
         String email = cert.getEmail();
         return usersService.getUserProfileByEmail(email);
     }
+
 
 
 }

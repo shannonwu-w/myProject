@@ -42,9 +42,11 @@
 
       <div style="text-align: center;">
         <router-link to="/userpage" class="btn-secondary">🏠 回會員中心</router-link>
-        <!-- <router-link to="/homepage" class="btn-secondary">🏠 回首頁</router-link> -->
-
+          <router-link to="/homepage" class="btn-secondary">🏠 回首頁</router-link>
       </div>
+            
+      
+ 
     </div>
 
     <footer>
@@ -102,6 +104,7 @@ const deleteReservation = async (reservationId) => {
     await axios.post(`/api/reservation/delete/${reservationId}`)
     console.log(`正在刪除訂位 ID: ${reservationId}`);
         alert('已成功取消訂位');
+        window.location.reload(); 
   }
 };
 </script>
@@ -216,7 +219,9 @@ tbody td {
   border-radius: 8px;
   font-weight: 600;
   margin-top: 30px;
+  margin-left: 10px;
   transition: 0.3s;
+  
 }
 
 .btn-secondary:hover {

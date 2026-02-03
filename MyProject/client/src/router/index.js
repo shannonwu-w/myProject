@@ -33,7 +33,7 @@ const router = createRouter({
         {
         path: '/adminpage',
         name: 'adminpage',
-        component: () => import('../views/AdminPage.vue')
+        component: () => import('../views/admin/AdminPage.vue')
         }, 
         {
         path: '/bookingpage',
@@ -54,7 +54,13 @@ const router = createRouter({
         path: '/bookingsuccess',
         name: 'bookingsuccess',
         component: () => import('../views/BookingSuccess.vue')
+        },
+        {
+        path: '/changepassword',
+        name: 'changepassword',
+        component: () => import('../views/ChangePassword.vue')
         }
+
 
 
         

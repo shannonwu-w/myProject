@@ -19,52 +19,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted,ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
 
 const router = useRouter();
-const userDto = ref({ role: '' })
+const userrole = ref();
 
 onMounted(async () => {
-    try {
-    const response = await axios.get('/api/status');
+      const storedToken = localStorage.getItem('userCert');
+      
 
-    if(response.data){
-        userDto.value = response.data;
-
-        if(userDto.value.role !== 'ADMIN'){
-            alert("⚠️ 您沒有管理員權限，將返回使用者首頁");
-            router.push('/userpage');
-        }
-        
-    }
-
-    }
-    catch(error){
-            console.error("驗證失敗", error);
-            alert("⚠️ 請先登入系統！");
-
-            router.push('/login')
-        }
-   
+      if (!storedToken) {
+          alert('請先登入');
+          router.push('/login');       
+      }
+      const userCert = JSON.parse(storedToken);
+      userrole.value = userCert.role;
+      
+         
+          if(userrole.value!== 'ADMIN'){
+              alert('您沒有權限');
+              router.push('/homepage');
+                    }      
+         
+ 
  
 });
 
 const handleLogout = async () => {
   try{
-    const response = await axios.get('api/logout');
     localStorage.removeItem('userCert');
     alert("🐾 登出成功");
-    router.push('/login');
-
-    console(response);
-
+    router.push('/homepage');
 
   }catch(error){
     console.error("登出請求失敗:", error);
     localStorage.clear();
-    router.push('/login');
+    router.push('/homepage');
    
   }
  

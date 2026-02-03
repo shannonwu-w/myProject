@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
    
     {
-      path: '/users', // 瀏覽器輸入的路徑
+      path: '/users',
       name: 'users',
       component: UserList
     },
@@ -59,10 +59,12 @@ const router = createRouter({
         path: '/changepassword',
         name: 'changepassword',
         component: () => import('../views/ChangePassword.vue')
+        },
+        {
+        path: '/all-users',
+        name: 'all-users',
+        component: () => import('../views/admin/AllUsers.vue')
         }
-
-
-
         
         ]
         })

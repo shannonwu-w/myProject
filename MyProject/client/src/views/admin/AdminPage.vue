@@ -4,7 +4,7 @@
       <h1>喵喵貓咖管理系統 🐱☕</h1>
 
       <div>
-        <router-link to="/admin/usermanagement" class="button">👤 使用者管理</router-link>
+        <router-link to="/all-users" class="button">👤 使用者管理</router-link>
         <router-link to="/admin/reservations" class="button">🧾 訂位管理</router-link>
         <router-link to="/homepage" class="button">🏠 喵喵貓咖訂位系統</router-link>
       </div>

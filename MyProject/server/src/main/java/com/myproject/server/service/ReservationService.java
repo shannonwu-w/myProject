@@ -81,4 +81,11 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteResv(Long reservationId){
+
+        this.reservationRepository.deleteById(reservationId);
+
+
+    }
+
 }

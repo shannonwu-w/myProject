@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationsDto {
+    private Long reservationId;
     private String name;
     private Integer people;
     private String email;

@@ -2,6 +2,7 @@ package com.myproject.server.controller;
 
 import com.myproject.server.domain.dto.ReservationsDto;
 import com.myproject.server.domain.dto.UserCert;
+import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.service.ReservationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,13 @@ public class ReservationController {
     @GetMapping("/history")
     public List<ReservationsDto> myReservations(@RequestParam Long userId) {
         return reservationService.getMyReservations(userId);
-
-
     }
+    @PostMapping("/delete/{reservationId}")
+    public void deleteReservation(@PathVariable Long reservationId){
+
+       this.reservationService.deleteResv(reservationId);
+    }
+
 
     }
 

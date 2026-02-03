@@ -97,13 +97,11 @@ const isTomorrowOrLater = (dateStr) => {
 };
 
 // 刪除訂位邏輯
-const deleteReservation = async (id) => {
+const deleteReservation = async (reservationId) => {
   if (confirm('❗️確定要取消這筆訂位紀錄嗎？')) {
-    console.log(`正在刪除訂位 ID: ${id}`);
-    // 實務上會呼叫 API: await axios.post(`/api/reservation/delete/${id}`)
-    // 然後重新抓取資料或在前端過濾掉該筆
-    reservations.value = reservations.value.filter(r => r.reservationId !== id);
-    alert('已成功取消訂位');
+    await axios.post(`/api/reservation/delete/${reservationId}`)
+    console.log(`正在刪除訂位 ID: ${reservationId}`);
+        alert('已成功取消訂位');
   }
 };
 </script>

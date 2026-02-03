@@ -39,13 +39,9 @@ public class UsersService {
         String salt = Hash.getSalt();
         String passwordHash = Hash.getHash(dto.getPassword(), salt);
 
-        Users user = new Users();
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
+        Users user = usersMapper.toEntity(dto);
         user.setPasswordHash(passwordHash);
         user.setSalt(salt);
-        user.setRole(dto.getRole());
-        user.setPhone(dto.getPhone());
 
         usersRepository.save(user);
     }

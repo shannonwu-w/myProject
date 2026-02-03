@@ -22,7 +22,7 @@ const form = reactive({
   people: '',
   email: '',
   phone: '',
-  date: '',
+  resvDate: '',
   timeSlot: '',
   message: ''
 })
@@ -135,7 +135,7 @@ const handleLogout = async () => {
           <label>📅 可預約日期:</label>
           <input
             type="date"
-            v-model="form.date"
+            v-model="form.resvDate"
             :min="minDate"
             :max="maxDate"
             required

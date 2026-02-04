@@ -30,7 +30,7 @@
           <td>{{ reservation.date }}</td>
           <td>
             <span v-if="reservation.timeSlots">
-              {{ timeMap[reservation.timeSlots.timeId] }}
+              {{ reservation.timeSlots}}
             </span>
             <span v-else>無時段</span>
           </td>
@@ -56,34 +56,56 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
-
-// 1. 定義時間對照表 (原本 JSP 中的 HashMap)
-const timeMap = reactive({
-  1: "10:00 - 11:30",
-  2: "12:00 - 13:30",
-  3: "14:00 - 15:30",
-  4: "16:00 - 17:30",
-  5: "18:00 - 19:30"
-});
+const userrole = ref();
 
 // 2. 訂位資料列表 (模擬從 API 獲取)
 const reservationList = ref([]);
 
+
 // 3. 模擬獲取資料
 const fetchReservations = async () => {
-  // 這裡應替換為你的 API 請求，例如 axios.get('/api/admin/reservations')
-  console.log("正在載入訂位資料...");
-  // reservationList.value = response.data;
+  try {
+    const response = await axios.get('/api/reservation/all-reservations');
+    if (response && response.data) {
+      reservationList.value = response.data;
+    }
+  } catch (error) {
+    console.error("API 請求失敗：", error.message);
+    if (error.response) {
+      console.error("狀態碼：", error.response.status);
+    }
+  }
 };
 
+onMounted(async () => {
+  // 1. 權限檢查
+  const storedToken = localStorage.getItem('userCert');
+  if (!storedToken) {
+    alert('請先登入');
+    router.push('/login');
+    return;
+  }
+
+  const userCert = JSON.parse(storedToken);
+  userrole.value = userCert.role;
+
+  if (userrole.value !== 'ADMIN') {
+    alert('您沒有權限');
+    router.push('/homepage');
+    return;
+  }
+  await fetchReservations();
+});
+
 // 4. 操作邏輯
-const editReservation = (id) => {
-  router.push(`/admin/editReservation?id=${id}`);
-};
+// const editReservation = (id) => {
+//   router.push(`/admin/editReservation?id=${id}`);
+// };
 
 const deleteReservation = (id) => {
   if (confirm('確定要刪除此筆訂位嗎？')) {
@@ -97,9 +119,7 @@ const handleLogout = () => {
   // 呼叫登出 API 並導向登入頁
 };
 
-onMounted(() => {
-  fetchReservations();
-});
+
 </script>
 
 <style scoped>

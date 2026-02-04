@@ -47,6 +47,11 @@ public class ReservationController {
        this.reservationService.deleteResv(reservationId);
     }
 
-
+    @GetMapping("/all-reservations")
+    public List<ReservationsDto> allReservations(){
+        return this.reservationService.allReservations();
     }
+
+
+}
 

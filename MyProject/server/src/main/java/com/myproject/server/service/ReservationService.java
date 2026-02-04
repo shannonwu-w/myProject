@@ -72,6 +72,13 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReservationsDto> allReservations(){
+        List<Reservations> list = reservationRepository.findAll();
+        return list.stream()
+                .map(reservationsMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<ReservationsDto> getMyReservations(Long userId) {
         List<Reservations> list = reservationRepository.findByUserId(userId);
 
@@ -80,6 +87,8 @@ public class ReservationService {
                 .map(reservationsMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+
 
     public void deleteResv(Long reservationId){
 

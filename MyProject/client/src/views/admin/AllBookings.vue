@@ -9,6 +9,15 @@
       <router-link to="/homepage" class="btn">🐱 喵喵貓咖首頁</router-link>
       <button @click="handleLogout" class="btn">🚪 登出</button>
     </div>
+    <div class="search-container">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        placeholder="請輸入姓名、電話或 Email 進行搜尋..."
+        class="search-input"
+      />
+      <button class="search-btn">🔍 搜尋</button>
+    </div>
 
     <table>
       <thead>
@@ -50,13 +59,16 @@
             </div>
           </td>
         </tr>
+        <tr v-if="filteredReservations.length === 0">
+          <td colspan="9" style="padding: 2rem; color: #8B4513;">找不到相符的訂位資料</td>
+        </tr>
       </tbody>
     </table>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -65,6 +77,7 @@ const userrole = ref();
 
 // 2. 訂位資料列表 (模擬從 API 獲取)
 const reservationList = ref([]);
+const searchQuery = ref('');
 
 
 // 3. 模擬獲取資料
@@ -120,6 +133,19 @@ const handleLogout = () => {
   // 呼叫登出 API 並導向登入頁
 };
 
+const filteredReservations = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) {
+    return reservationList.value;
+  }
+  return reservationList.value.filter(item => {
+    return (
+      item.name?.toLowerCase().includes(query) ||
+      item.phone?.includes(query) ||
+      item.email?.toLowerCase().includes(query)
+    );
+  });
+});
 
 </script>
 
@@ -174,6 +200,47 @@ h1 {
   background-color: #D4A574;
   color: #4A2C15;
 }
+.search-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+.search-btn{
+  margin-left: 10px;
+  padding: 0.7rem 1.5rem;
+  background-color: #ddc6af; 
+  color: #4A2C15;
+  border: none;
+  border-radius: 50px; 
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.search-btn:hover {
+  background-color: #8B4513;
+  color: #FFF8E7;
+  transform: translateY(-2px); /* 輕微浮起效果 */
+}
+
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem 1.2rem;
+  border: 2px solid #D4A574;
+  border-radius: 50px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #4A2C15;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #8B4513;
+  box-shadow: 0 0 8px rgba(139, 69, 19, 0.2);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

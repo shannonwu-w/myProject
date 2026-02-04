@@ -63,6 +63,20 @@ public class UsersController {
       return usersService.findAllUsers();
     }
 
+    @PostMapping("/admin/updateUser")
+    public String adminUpdateUser(@RequestBody UsersDto usersDto){
+        String result;
+
+        try {
+            result = "新增成功";
+        usersService.addUser(usersDto);
+    } catch (Exception e){
+            result = "新增失敗"+e ;
+
+        }
+        return result;
+
+    }
 
 
 

@@ -22,4 +22,9 @@ public class UsersMapper {
         return modelMapper.map(usersDto, Users.class);
     }
 
+    // 重點：將 DTO 的值 覆蓋到 現有的 Entity 上
+    public void updateEntityFromDto(UsersDto dto, Users entity) {
+        modelMapper.map(dto, entity);
+    }
+
 }

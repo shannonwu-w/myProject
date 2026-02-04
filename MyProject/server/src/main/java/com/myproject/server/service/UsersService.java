@@ -33,17 +33,35 @@ public class UsersService {
 
     @Transactional
     public void addUser(UsersDto dto) {
+        Users user;
 
-        String salt = Hash.getSalt();
-        String passwordHash = Hash.getHash(dto.getPassword(), salt);
+        // 1. 判斷是更新還是新增
+        if (dto.getUserId() != null && dto.getUserId() > 0) {
+            // 【修改模式】一定要先從 DB 撈出持久化狀態的物件
+            user = usersRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("找不到使用者 ID: " + dto.getUserId()));
+        } else {
+            // 【新增模式】
+            user = new Users();
+        }
 
-        Users user = usersMapper.toEntity(dto);
-        user.setPasswordHash(passwordHash);
-        user.setSalt(salt);
+        // 2. 只有新使用者或 Email 改變時才設定 Email
+        user.setEmail(dto.getEmail());
+        user.setUsername(dto.getUsername());
+        user.setPhone(dto.getPhone());
+        user.setRole(dto.getRole());
 
+        // 3. 處理密碼：前端沒傳密碼就不動它 (保留原密碼)
+        if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
+            String salt = Hash.getSalt();
+            String passwordHash = Hash.getHash(dto.getPassword(), salt);
+            user.setSalt(salt);
+            user.setPasswordHash(passwordHash);
+        }
+
+        // 4. 儲存。JPA 看到 user 身上有 ID，就會自動發送 UPDATE 而非 INSERT
         usersRepository.save(user);
     }
-
 
     public UserProfileDto getUserProfileByEmail(String email) throws Exception {
         Users user = usersRepository.findByEmail(email)

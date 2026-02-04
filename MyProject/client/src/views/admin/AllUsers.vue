@@ -74,7 +74,6 @@
 
     <div class="container">
       <h2>➕ 新增使用者</h2>
-      <div class="form-group">
         <div class="form-group">
         <label>使用者名稱：</label>
         <input v-model="newUser.username" type="text" required />
@@ -94,8 +93,8 @@
       <div class="form-group">
         <label>身分：</label>
         <select v-model="newUser.role">
-          <option value="user">一般使用者</option>
-          <option value="admin">管理員</option>
+          <option value="USER">一般使用者</option>
+          <option value="ADMIN">管理員</option>
         
         </select>
       </div>
@@ -106,7 +105,6 @@
     <div class="footer">
       <p>🐾 本系統僅限喵喵貓咖管理員使用！</p>
     </div>
-  </div>
 
 </template>
 
@@ -125,7 +123,7 @@ const newUser = ref({
   email: '',
   password: '',
   phone:'',
-  role: 'user'
+  role: ''
 });
 
 
@@ -187,10 +185,24 @@ const editUser = (user) => {
 
 
 const saveUpdate = async () => {
-  console.log('更新使用者:', selectedUser.value);
-  message.value = '更新成功！';
-  selectedUser.value = null;
-  fetchUsers();
+  console.log("準備送出的資料：", JSON.stringify(selectedUser.value));
+  try {
+    // 修正路徑：updsateUser -> updateUser
+    const response = await axios.post('/api/admin/updateUser', selectedUser.value);
+    
+    // 注意：如果後端回傳的是純字串 "成功"，response.data 就不是物件
+    // 根據你之前的 Controller 回傳 String，這裡應調整：
+    if (response.data.includes("成功") || response.data === "success") {
+      alert("✅ 更新成功");
+      selectedUser.value = null;
+      await fetchUsers();
+    } else {
+      message.value = '❌ 伺服器訊息：' + response.data;
+    }
+  } catch (error) {
+    console.error("更新失敗", error);
+    message.value = '❌ 連線失敗，請檢查網路或後端 Log';
+  }
 };
 
 
@@ -204,13 +216,19 @@ const deleteUser = async (user) => {
 
 
 const addUser = async () => {
-  console.log('新增使用者:', newUser.value);
-  message.value = '帳號建立成功！';
-  // 重置表單
-  newUser.value = { username: '', email: '', password: '', role: 'user' };
-  fetchUsers();
+  try {
+    // 務必加上這行發送給後端
+    const response = await axios.post('/api/admin/updateUser', newUser.value);
+    if (response.data.includes("成功")) {
+      alert("➕ 帳號建立成功！");
+      newUser.value = { username: '', email: '', password: '', phone: '', role: 'USER' };
+      await fetchUsers();
+    }
+  } catch (error) {
+    message.value = '❌ 新增失敗';
+    console.log(error);
+  }
 };
-
 
 const handleLogout = () => {
   try{

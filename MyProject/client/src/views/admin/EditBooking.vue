@@ -2,10 +2,7 @@
   <div class="edit-container">
     <div class="container">
       <h1>編輯訂位資料</h1>
-
-      <div v-if="statusMsg" :class="['message', isSuccess ? 'success' : 'error']">
-        {{ statusMsg }}
-      </div>
+      
 
       <form @submit.prevent="updateReservation" id="reservationForm">
         <label for="name">預約人姓名</label>
@@ -49,6 +46,10 @@
         <label for="message">特殊需求備註</label>
         <textarea v-model="form.message" id="message" rows="4" placeholder="例如：慶生、過敏資訊、指定座位區等"></textarea>
 
+        <div v-if="statusMsg" :class="['message', isSuccess ? 'success' : 'error']">
+        {{ statusMsg }}
+        </div>
+
         <button type="submit" class="btn-submit" :disabled="loading">
           {{ loading ? '更新中...' : '✅ 更新訂位' }}
         </button>
@@ -58,6 +59,8 @@
         <button type="button" class="btn-secondary" @click="router.back()">← 回上一頁</button>
         <router-link to="/adminpage" class="btn-secondary">🏠 回管理員首頁</router-link>
       </div>
+
+    
     </div>
   </div>
 </template>
@@ -146,7 +149,7 @@ const updateReservation = async () => {
     });
 
     if (response.status === 200) {
-      statusMsg.value = "✅ " + (response.data.message || "訂位成功！");
+      statusMsg.value = "✅ " + (response.data.message || "更新成功！");
       isSuccess.value = true;
       
       // 成功後 1.5 秒自動跳轉回列表頁
@@ -155,7 +158,9 @@ const updateReservation = async () => {
       }, 1500);
     }
   } catch (error) {
+    // const msg = error.response?.data?.error || '訂位失敗'
     isSuccess.value = false;
+      // alert(`❗ ${msg}`)
     if (error.response) {
       // 處理 401 (未登入) 或 400 (錯誤)
       statusMsg.value = "❌ " + (error.response.data.error || "更新失敗");
@@ -215,7 +220,7 @@ input, select, textarea {
   width: 100%;
 }
 .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
-.message { margin-bottom: 1rem; padding: 1rem; border-radius: 12px; text-align: center; }
+.message { margin-top: 1rem; margin-bottom: 1rem; padding: 1rem; border-radius: 12px; text-align: center; }
 .success { background-color: #d4edda; color: #155724; }
 .error { background-color: #f8d7da; color: #721c24; }
 .btn-group { margin-top: 1.5rem; display: flex; justify-content: space-between; gap: 10px; }

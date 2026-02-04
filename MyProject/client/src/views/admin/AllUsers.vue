@@ -1,4 +1,5 @@
 <template>
+
   <div class="main-layout">
     <div class="container">
       <h1>喵喵貓咖使用者管理系統 🐱☕</h1>
@@ -100,11 +101,12 @@
       </div>
       <button @click="addUser" class="button">➕ 建立帳號</button>
     </div>
-</div>
+
 
     <div class="footer">
       <p>🐾 本系統僅限喵喵貓咖管理員使用！</p>
     </div>
+</div>
 
 </template>
 
@@ -245,8 +247,8 @@ const handleLogout = () => {
 };
 
 
-const goTo = (path) => {
- router.push(`/${path}`);
+const goTo = (routeName) => {
+ router.push({ name: routeName }); 
 };
 
 

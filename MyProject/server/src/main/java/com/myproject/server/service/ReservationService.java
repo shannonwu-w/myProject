@@ -97,4 +97,11 @@ public class ReservationService {
 
     }
 
+    public List<ReservationsDto> getResvEditData(Long reservationId){
+        List<Reservations> list = reservationRepository.findByReservationId(reservationId);
+        return list.stream()
+                .map(reservationsMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

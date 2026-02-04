@@ -71,8 +71,8 @@ const router = createRouter({
         component: () => import('../views/admin/AllBookings.vue')
         },
         {
-        path: '/edit-booking:id',
-        name: 'edit-booking',
+        path: '/edit',
+        name: 'editBooking',
         component: () => import('../views/admin/EditBooking.vue')
         }
         

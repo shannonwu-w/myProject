@@ -37,10 +37,13 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
+
+
     @GetMapping("/history")
     public List<ReservationsDto> myReservations(@RequestParam Long userId) {
         return reservationService.getMyReservations(userId);
     }
+
     @PostMapping("/delete/{reservationId}")
     public void deleteReservation(@PathVariable Long reservationId){
 
@@ -51,6 +54,14 @@ public class ReservationController {
     public List<ReservationsDto> allReservations(){
         return this.reservationService.allReservations();
     }
+
+    @GetMapping("/edit/{reservationId}")
+    public List<ReservationsDto> editReservation(@PathVariable Long reservationId){
+        return this.reservationService.getResvEditData(reservationId);
+    }
+
+
+
 
 
 }

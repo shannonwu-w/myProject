@@ -117,8 +117,11 @@ onMounted(async () => {
 
 // 4. 操作邏輯
 const editReservation = (id) => {
-  // router.push(`/admin/edit-booking?id=${id}`);
-  router.push({ name: 'edit-booking', params: { id: id } });
+  router.push({
+    path:'/edit',
+    query:{id:id}
+  })
+  // router.push({ name: 'edit-booking', params: { id: id } });
 };
 
 const deleteReservation = (id) => {

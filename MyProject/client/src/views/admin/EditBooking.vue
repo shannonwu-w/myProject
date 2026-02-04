@@ -30,11 +30,15 @@
         <label for="timeSlot">可選擇時段</label>
         <select v-model="form.timeId" id="timeSlot" required>
           <option value="">請選擇時段</option>
-          <option value="1">10:00 - 11:30</option>
-          <option value="2">12:00 - 13:30</option>
-          <option value="3">14:00 - 15:30</option>
-          <option value="4">16:00 - 17:30</option>
-          <option value="5">18:00 - 19:30</option>
+          <option value="1">11:00</option>
+          <option value="2">12:00</option>
+          <option value="3">13:00</option>
+          <option value="4">14:00</option>
+          <option value="5">15:00</option>
+          <option value="6">16:00</option>
+          <option value="7">17:00</option>
+          <option value="8">18:00</option>
+
         </select>
 
         <label for="people">用餐人數</label>
@@ -76,11 +80,11 @@ const isSuccess = ref(true);
 const form = reactive({
   reservationId: '',
   name: '',
-  phone: '',
-  email: '',
-  resvDate: '',
-  timeId: '',
   people: '',
+  email: '',
+  phone: '',
+  resvDate: '',
+  timeSlot: '',
   message: ''
 });
 
@@ -96,20 +100,17 @@ const maxDate = formatDate(nextMonth);
 // 4. 初始化：取得單筆訂位資料
 onMounted(async () => {
   // 獲取路徑參數或查詢參數中的 ID
-  const id = route.query.id || route.params.id;
-  if (!id) {
+  const reservationId = route.query.id || route.params.id;
+  if (!reservationId) {
     statusMsg.value = "無效的訂位編號";
     isSuccess.value = false;
     return;
   }
 
   try {
-    const response = await axios.get(`/api/reservation/detail/${id}`);
-    const data = response.data;
-    // 將後端資料填入表單
+    const response = await axios.get(`/api/reservation/edit/${reservationId}`);
+    const data = response.data[0];
     Object.assign(form, data);
-    // 假設後端傳來的時段結構是 { timeSlots: { timeId: 1 } }
-    if (data.timeSlots) form.timeId = data.timeSlots.timeId;
   } catch (error) {
     console.error("載入失敗", error);
     statusMsg.value = "無法取得訂位資料";
@@ -117,27 +118,7 @@ onMounted(async () => {
   }
 });
 
-// 5. 提交更新
-const updateReservation = async () => {
-  loading.value = true;
-  statusMsg.value = '';
-  
-  try {
-    // 根據你的後端路徑修改
-    const response = await axios.post('/api/reservation/updateReservation', form);
-    if (response.status === 200) {
-      statusMsg.value = "✅ 更新成功！";
-      isSuccess.value = true;
-      // 成功後延遲跳轉回列表
-      setTimeout(() => router.push('/admin/all-reservations'), 1500);
-    }
-  } catch (error) {
-    statusMsg.value = "❌ 更新失敗：" + (error.response?.data?.message || "請檢查輸入內容");
-    isSuccess.value = false;
-  } finally {
-    loading.value = false;
-  }
-};
+
 </script>
 
 <style scoped>

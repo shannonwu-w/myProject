@@ -91,7 +91,7 @@ const handleReset = () => {
             type="text" 
             id="authcode" 
             v-model="loginForm.authcode" 
-            placeholder="請輸入驗證碼" 
+            placeholder="請輸入驗證碼(不分大小寫)" 
             required 
           />
           <img 

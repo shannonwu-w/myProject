@@ -63,7 +63,7 @@ public class UsersController {
       return usersService.findAllUsers();
     }
 
-    @PostMapping("/admin/updateUser")
+    @PostMapping("/admin/update-user")
     public String adminUpdateUser(@RequestBody UsersDto usersDto){
         String result;
 
@@ -78,7 +78,10 @@ public class UsersController {
 
     }
 
-
+  @PostMapping("/admin/deleteUser")
+  public void adminDeleteUser(@RequestParam Long userId){
+        usersService.deleteUser(userId);
+  }
 
 
 

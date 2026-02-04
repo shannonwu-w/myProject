@@ -7,7 +7,7 @@
 
       <div v-if="currentUser.role === 'admin'" class="nav-bar">
         <button @click="goTo('adminpage')" class="button">👤 回管理員首頁</button>
-        <button @click="goTo('allbooking')" class="button">🧾 訂位管理</button>
+        <button @click="goTo('all-bookings')" class="button">🧾 訂位管理</button>
         <button @click="goTo('homepage')" class="button">🐱 喵喵貓咖訂位系統</button>
         <button @click="handleLogout" class="button">🚪 登出</button>
       </div>
@@ -190,7 +190,7 @@ const saveUpdate = async () => {
   console.log("準備送出的資料：", JSON.stringify(selectedUser.value));
   try {
     // 修正路徑：updsateUser -> updateUser
-    const response = await axios.post('/api/admin/updateUser', selectedUser.value);
+    const response = await axios.post('/api/admin/update-user', selectedUser.value);
     
     // 注意：如果後端回傳的是純字串 "成功"，response.data 就不是物件
     // 根據你之前的 Controller 回傳 String，這裡應調整：
@@ -210,7 +210,11 @@ const saveUpdate = async () => {
 
 const deleteUser = async (user) => {
   if (confirm(`確定要刪除使用者「${user.username}」嗎？`)) {
+    const response = await axios.post('/api/admin/deleteUser', null ,{
+      params:{userId:user.userId}
+    });
     console.log('刪除 ID:', user.userId);
+    console.log(response);
     message.value = '使用者已刪除';
     fetchUsers();
   }
@@ -220,7 +224,7 @@ const deleteUser = async (user) => {
 const addUser = async () => {
   try {
     // 務必加上這行發送給後端
-    const response = await axios.post('/api/admin/updateUser', newUser.value);
+    const response = await axios.post('/api/admin/update-user', newUser.value);
     if (response.data.includes("成功")) {
       alert("➕ 帳號建立成功！");
       newUser.value = { username: '', email: '', password: '', phone: '', role: 'USER' };

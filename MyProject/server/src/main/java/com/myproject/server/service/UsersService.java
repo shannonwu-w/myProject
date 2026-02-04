@@ -9,6 +9,8 @@ import com.myproject.server.util.Hash;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 
@@ -95,7 +97,9 @@ public class UsersService {
         return dto;
     }
 
-
+    public void deleteUser(@RequestParam Long userId){
+        usersRepository.deleteById(userId);
+    }
 
 
 

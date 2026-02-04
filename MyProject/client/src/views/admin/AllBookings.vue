@@ -27,10 +27,10 @@
       <tbody>
         <tr v-for="reservation in reservationList" :key="reservation.reservationId">
           <td>{{ reservation.reservationId }}</td>
-          <td>{{ reservation.date }}</td>
+          <td>{{ reservation.resvDate }}</td>
           <td>
-            <span v-if="reservation.timeSlots">
-              {{ reservation.timeSlots}}
+            <span v-if="reservation.timeSlot">
+              {{ reservation.timeSlot}}
             </span>
             <span v-else>無時段</span>
           </td>

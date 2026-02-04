@@ -131,10 +131,16 @@ const deleteReservation = (id) => {
   }
 };
 
-const handleLogout = () => {
-  console.log("執行登出");
-  // 呼叫登出 API 並導向登入頁
-};
+const handleLogout = async () => {
+  try {
+    await axios.get('/api/logout')
+  } catch(error) {
+      console.log(error);
+  }
+  // 清除 localStorage
+  localStorage.removeItem('userCert')
+  router.push('/login')
+}
 
 const filteredReservations = computed(() => {
   const query = searchQuery.value.toLowerCase().trim();

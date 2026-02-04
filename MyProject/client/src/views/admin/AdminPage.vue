@@ -7,9 +7,10 @@
         <router-link to="/all-users" class="button">👤 使用者管理</router-link>
         <router-link to="/all-bookings" class="button">🧾 訂位管理</router-link>
         <router-link to="/homepage" class="button">🏠 喵喵貓咖訂位系統</router-link>
+         <button @click="handleLogout" class="button logout-btn">🚪 登出</button>
       </div>
 
-      <button @click="handleLogout" class="button logout-btn">🚪 登出</button>
+     
     </div>
 
     <div class="footer">
@@ -97,7 +98,7 @@ h1 {
 
 .button {
   display: inline-block;
-  margin: 12px;
+  margin: 20px;
   padding: 15px ;
   font-size: 1.2rem;
   font-weight: bold;

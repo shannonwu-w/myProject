@@ -124,10 +124,12 @@ const editReservation = (id) => {
   // router.push({ name: 'edit-booking', params: { id: id } });
 };
 
-const deleteReservation = (id) => {
-  if (confirm('確定要刪除此筆訂位嗎？')) {
-    console.log(`執行刪除 ID: ${id}`);
-    // 這裡應呼叫刪除 API
+const deleteReservation = async (reservationId) => {
+  if (confirm('❗️確定要取消這筆訂位紀錄嗎？')) {
+    await axios.post(`/api/reservation/delete/${reservationId}`)
+    console.log(`正在刪除訂位 ID: ${reservationId}`);
+        alert('已成功取消訂位');
+        window.location.reload(); 
   }
 };
 

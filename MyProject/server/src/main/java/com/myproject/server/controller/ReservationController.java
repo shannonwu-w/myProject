@@ -22,6 +22,7 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
+    //新增、修改訂位資料
     @PostMapping("/make")
     public ResponseEntity<?> createReservation(@RequestBody ReservationsDto dto, HttpSession session) {
         UserCert userCert = (UserCert) session.getAttribute("userCert");
@@ -38,23 +39,26 @@ public class ReservationController {
         }
     }
 
-
+    //使用者查看自己的訂位紀錄
     @GetMapping("/history")
     public List<ReservationsDto> myReservations(@RequestParam Long userId) {
         return reservationService.getMyReservations(userId);
     }
 
+    //刪除訂位
     @PostMapping("/delete/{reservationId}")
     public void deleteReservation(@PathVariable Long reservationId){
 
        this.reservationService.deleteResv(reservationId);
     }
 
+    //查看全部的訂位
     @GetMapping("/all-reservations")
     public List<ReservationsDto> allReservations(){
         return this.reservationService.allReservations();
     }
 
+    //得到要編輯的訂位資料
     @GetMapping("/edit/{reservationId}")
     public List<ReservationsDto> editReservation(@PathVariable Long reservationId){
         return this.reservationService.getResvEditData(reservationId);

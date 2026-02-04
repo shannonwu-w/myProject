@@ -29,22 +29,21 @@
 
         <label for="timeSlot">可選擇時段</label>
         <select v-model="form.timeId" id="timeSlot" required>
-          <option value="">請選擇時段</option>
-          <option value="1">11:00</option>
-          <option value="2">12:00</option>
-          <option value="3">13:00</option>
-          <option value="4">14:00</option>
-          <option value="5">15:00</option>
-          <option value="6">16:00</option>
-          <option value="7">17:00</option>
-          <option value="8">18:00</option>
-
+         <option value="">請選擇時段</option>
+          <option value="11:00">11:00</option>
+          <option value="12:00">12:00</option>
+          <option value="13:00">13:00</option>
+          <option value="14:00">14:00</option>
+          <option value="15:00">15:00</option>
+          <option value="16:00">16:00</option>
+          <option value="17:00">17:00</option>
+          <option value="18:00">18:00</option>
         </select>
 
         <label for="people">用餐人數</label>
         <select v-model="form.people" id="people" required>
           <option value="">請選擇</option>
-          <option v-for="n in 6" :key="n" :value="n">{{ n }}位</option>
+          <option v-for="n in [2, 3, 4, 5, 6]" :key="n" :value="n">{{ n }}位</option>
         </select>
 
         <label for="message">特殊需求備註</label>
@@ -111,12 +110,66 @@ onMounted(async () => {
     const response = await axios.get(`/api/reservation/edit/${reservationId}`);
     const data = response.data[0];
     Object.assign(form, data);
+    if (data.timeSlot) {
+      // 假設後端回傳是 "11:00" 或 "[11:00]"
+      // 如果有中括號，可能需要處理：data.timeSlot.replace(/[\[\]]/g, '')
+      form.timeId = data.timeSlot; 
+    }
   } catch (error) {
     console.error("載入失敗", error);
     statusMsg.value = "無法取得訂位資料";
     isSuccess.value = false;
   }
 });
+
+const updateReservation = async () => {
+  // 基本驗證
+  if (!form.resvDate || !form.timeId) {
+    statusMsg.value = "請填寫完整日期與時段";
+    isSuccess.value = false;
+    return;
+  }
+
+  loading.value = true;
+  statusMsg.value = '';
+
+  try {
+    // 準備要送出的資料 (確保 DTO 欄位名稱正確)
+    // 這裡我們把 timeId 塞回 timeSlot 送出，以符合你後端的存儲習慣
+    const payload = {
+      ...form,
+      timeSlot: form.timeId  // 確保後端收到的是 "11:00" 這種格式
+    };
+
+    const response = await axios.post('/api/reservation/make', payload, {
+      withCredentials: true // 重要：帶上 Session Cookie
+    });
+
+    if (response.status === 200) {
+      statusMsg.value = "✅ " + (response.data.message || "訂位成功！");
+      isSuccess.value = true;
+      
+      // 成功後 1.5 秒自動跳轉回列表頁
+      setTimeout(() => {
+        router.push('/all-bookings');
+      }, 1500);
+    }
+  } catch (error) {
+    isSuccess.value = false;
+    if (error.response) {
+      // 處理 401 (未登入) 或 400 (錯誤)
+      statusMsg.value = "❌ " + (error.response.data.error || "更新失敗");
+      if (error.response.status === 401) {
+        alert("登入逾時，請重新登入");
+        router.push('/login');
+      }
+    } else {
+      statusMsg.value = "❌ 網路連線失敗，請檢查伺服器";
+    }
+  } finally {
+    loading.value = false;
+  }
+};
 
 
 </script>

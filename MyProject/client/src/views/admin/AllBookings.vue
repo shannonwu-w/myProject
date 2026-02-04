@@ -103,9 +103,10 @@ onMounted(async () => {
 });
 
 // 4. 操作邏輯
-// const editReservation = (id) => {
-//   router.push(`/admin/editReservation?id=${id}`);
-// };
+const editReservation = (id) => {
+  // router.push(`/admin/edit-booking?id=${id}`);
+  router.push({ name: 'edit-booking', params: { id: id } });
+};
 
 const deleteReservation = (id) => {
   if (confirm('確定要刪除此筆訂位嗎？')) {

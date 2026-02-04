@@ -7,7 +7,7 @@
 
       <div v-if="currentUser.role === 'admin'" class="nav-bar">
         <button @click="goTo('adminpage')" class="button">👤 回管理員首頁</button>
-        <button @click="goTo('all-booking')" class="button">🧾 訂位管理</button>
+        <button @click="goTo('all-bookings')" class="button">🧾 訂位管理</button>
         <button @click="goTo('homepage')" class="button">🐱 喵喵貓咖訂位系統</button>
         <button @click="handleLogout" class="button">🚪 登出</button>
       </div>

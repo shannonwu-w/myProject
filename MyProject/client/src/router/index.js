@@ -69,6 +69,11 @@ const router = createRouter({
         path: '/all-bookings',
         name: 'all-bookings',
         component: () => import('../views/admin/AllBookings.vue')
+        },
+        {
+        path: '/edit-booking:id',
+        name: 'edit-booking',
+        component: () => import('../views/admin/EditBooking.vue')
         }
         
         ]

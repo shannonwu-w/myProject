@@ -6,6 +6,10 @@ import com.myproject.server.domain.dto.UsersDto;
 import com.myproject.server.service.UsersService;
 import javax.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -58,9 +62,12 @@ public class UsersController {
         return usersService.updateUserPassword(userId, dto);
     }
 
-    @GetMapping("/admin/all-users")
-    public List<UsersDto> allUserList(){
-      return usersService.findAllUsers();
+    @GetMapping("/admin/find-users")
+    public Page<UsersDto> allUserList(
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        return usersService.findAllUsersByKeyword(keyword, pageable);
     }
 
     @PostMapping("/admin/update-user")

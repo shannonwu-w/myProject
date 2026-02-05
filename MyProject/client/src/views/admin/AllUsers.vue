@@ -11,6 +11,10 @@
         <button @click="goTo('homepage')" class="button">喵喵貓咖訂位系統</button>
         <button @click="handleLogout" class="button">🚪登出</button>
       </div>
+      <div class="search-bar">
+      <input v-model="searchKeyword" placeholder="搜尋姓名、電話或 Email..." @keyup.enter="fetchUsers" />
+        <button @click="fetchUsers" class="button">🔍 搜尋</button>
+      </div>
 
 
       <p v-if="message" class="status-message">{{ message }}</p>
@@ -39,8 +43,14 @@
           </tr>
         </tbody>
       </table>
-    </div>
+      <div class="pagination">
+        <button :disabled="currentPage === 0" @click="currentPage--; fetchUsers()" class="button">上一頁</button>
+        <span>第 {{ currentPage + 1 }} 頁 / 共 {{ totalPages }} 頁</span>
+        <button :disabled="currentPage >= totalPages - 1" @click="currentPage++; fetchUsers()" class="button">下一頁</button>
+      </div>
 
+    </div>
+   
 
     <div v-if="selectedUser" class="container">
       <h2>🔧 修改使用者資料</h2>
@@ -128,6 +138,9 @@ const newUser = ref({
   role: ''
 });
 
+const searchKeyword = ref(''); // 新增搜尋關鍵字變數
+const currentPage = ref(0);   // 記錄目前頁碼
+const totalPages = ref(0);
 
 // --- 生命週期 ---
 onMounted(() => {
@@ -166,20 +179,30 @@ const checkAuth = () => {
   }
 };
 
-
 const fetchUsers = async () => {
-    try{
-        const res = await axios.get('/api/admin/all-users');
-        userList.value = res.data;
-    }
-    catch (error) {
+    try {
+        const res = await axios.get('/api/admin/find-users', {
+            params: {
+                keyword: searchKeyword.value,
+                page: currentPage.value, // 目前頁碼 (0-based)
+                size: 10
+            }
+        });
+
+        // 2. 更新資料列表
+        userList.value = res.data.content; 
+        
+        // 3. 更新總頁數 (這會讓 HTML 的 "共 X 頁" 顯示出來)
+        totalPages.value = res.data.totalPages; 
+
+        // 除錯用：打開瀏覽器 F12 看看有沒有印出資料
+        console.log("成功抓取資料:", res.data.content);
+        
+    } catch (error) {
         console.error('取得資料失敗:', error);
         message.value = '無法載入使用者資料，請稍後再試。';
-  }
-
+    }
 };
-
-
 const editUser = (user) => {
   // 深拷貝一份資料出來修改，避免直接影響表格
   selectedUser.value = { ...user, password: '' };
@@ -279,6 +302,16 @@ const goTo = (routeName) => {
   width: 90%;
   max-width: 800px;
 }
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+.search-bar input {
+  flex: 1;
+}
+
 h1, h2 {
   text-align: center;
   color: #8B4513;
@@ -325,5 +358,6 @@ input, select {
 }
 .hint { font-size: 0.9rem; color: #555; }
 .footer { color: #E8D3B2; padding: 2rem; }
+
 </style>
 

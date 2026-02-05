@@ -23,8 +23,7 @@ public interface ReservationRepository extends JpaRepository<Reservations, Long>
             "r.message LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
             "TO_CHAR(r.resv_date) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
             "TO_CHAR(r.people) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "TO_CHAR(r.reservation_id) LIKE CONCAT(CONCAT('%', :pattern), '%') " +
-            "ORDER BY r.resv_date DESC",
+            "TO_CHAR(r.reservation_id) LIKE CONCAT(CONCAT('%', :pattern), '%') " ,
             countQuery = "SELECT count(*) FROM reservations r WHERE " +
                     "LOWER(r.name) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
                     "LOWER(r.email) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%'))",

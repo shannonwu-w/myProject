@@ -8,11 +8,10 @@ import com.myproject.server.repository.UsersRepository;
 import com.myproject.server.util.Hash;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 
 @AllArgsConstructor
@@ -25,13 +24,10 @@ public class UsersService {
     /**
      * 查詢所有使用者
      */
-    public List<UsersDto> findAllUsers() {
-        List<Users> usersList = usersRepository.findAll();
-
-        // 使用 Stream 批量轉換 Entity -> DTO
-        return usersList.stream()
-                .map(usersMapper::toDto)
-                .toList();
+    public Page<UsersDto> findAllUsersByKeyword(String keyword, Pageable pageable) {
+        Page<Users> usersPage = usersRepository.findByAllFields(keyword, pageable);
+        // 確保 Mapper 能夠將 Users 實體轉為 UsersDto
+        return usersPage.map(usersMapper::toDto);
     }
 
     @Transactional

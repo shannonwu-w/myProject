@@ -16,16 +16,20 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
 
 
-   @Query(value = "SELECT r FROM　USERS r WHERE "+
-           "LOWER(r.email) LIKE LOWER(:keyword) OR "+
-           "CAST(r.phone AS String) LIKE :keyword OR "+
-           "LOWER(r.userName) LIKE :keyword OR "+
-           "CAST(r.role) LIKE :keyword "+
-           "ORDER BY　r.userId　DESC ", nativeQuery = true
-   )
-   Page<Users> findByAllFields(@Param("keyword") String keyword, Pageable pageable);
+    @Query(
+            value = "SELECT * FROM USERS u WHERE " +
+                    "LOWER(u.EMAIL) LIKE LOWER('%' || :keyword || '%') OR " +
+                    "CAST(u.PHONE AS CHAR(20)) LIKE '%' || :keyword || '%' OR " +
+                    "LOWER(u.USERNAME) LIKE LOWER('%' || :keyword || '%') OR " +
+                    "LOWER(CAST(u.ROLE AS CHAR(20))) LIKE LOWER('%' || :keyword || '%') " +
+                    "ORDER BY u.USER_ID DESC",
+            countQuery = "SELECT count(*) FROM USERS u WHERE " +
+                    "LOWER(u.EMAIL) LIKE LOWER('%' || :keyword || '%') OR " +
+                    "CAST(u.PHONE AS CHAR(20)) LIKE '%' || :keyword || '%' OR " +
+                    "LOWER(u.USERNAME) LIKE LOWER('%' || :keyword || '%') OR " +
+                    "LOWER(CAST(u.ROLE AS CHAR(20))) LIKE LOWER('%' || :keyword || '%')",
+            nativeQuery = true
+    )
+    Page<Users> findByAllFields(@Param("keyword") String keyword, Pageable pageable);
 
-
-    @Override
-    Page<Users> findAll(Pageable pageable);
 }

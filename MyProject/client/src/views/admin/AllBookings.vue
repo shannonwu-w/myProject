@@ -104,13 +104,12 @@ import axios from 'axios';
 const router = useRouter();
 const userrole = ref();
 
-// 2. 訂位資料列表 (模擬從 API 獲取)
 const reservationList = ref([]);
 const displayList = ref([]);
 const searchQuery = ref('');
 const currentPage = ref(0);  // 目前頁碼
 const totalPages = ref(0);   // 總頁數
-const pageSize = ref(10);    // 每頁幾筆
+const pageSize = ref(5);    // 每頁幾筆
 
 const fetchReservations = async (page = 0) => {
   try {

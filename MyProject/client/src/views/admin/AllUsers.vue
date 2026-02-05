@@ -44,9 +44,19 @@
         </tbody>
       </table>
       <div class="pagination">
+        <div class="page-select-wrapper">
+      <label for="pageSize">顯示：</label>
+      <select v-model="pageSize" @change="currentPage = 0; fetchUsers(0)" class="page-select">
+        <option :value="5">5 筆</option>
+        <option :value="10">10 筆</option>
+        <option :value="20">20 筆</option>
+      </select>
+      </div>
         <button :disabled="currentPage === 0" @click="currentPage--; fetchUsers()" class="button">上一頁</button>
         <span>第 {{ currentPage + 1 }} 頁 / 共 {{ totalPages }} 頁</span>
         <button :disabled="currentPage >= totalPages - 1" @click="currentPage++; fetchUsers()" class="button">下一頁</button>
+
+        
       </div>
 
     </div>
@@ -141,6 +151,7 @@ const newUser = ref({
 const searchKeyword = ref(''); // 新增搜尋關鍵字變數
 const currentPage = ref(0);   // 記錄目前頁碼
 const totalPages = ref(0);
+const pageSize = ref(5);
 
 // --- 生命週期 ---
 onMounted(() => {
@@ -179,24 +190,24 @@ const checkAuth = () => {
   }
 };
 
-const fetchUsers = async () => {
+const fetchUsers = async (p = currentPage.value) => {
     try {
         const res = await axios.get('/api/admin/find-users', {
             params: {
                 keyword: searchKeyword.value,
-                page: currentPage.value, // 目前頁碼 (0-based)
-                size: 10
+                page:p, // 目前頁碼 (0-based)
+                size: pageSize.value
             }
         });
 
         // 2. 更新資料列表
         userList.value = res.data.content; 
-        
-        // 3. 更新總頁數 (這會讓 HTML 的 "共 X 頁" 顯示出來)
         totalPages.value = res.data.totalPages; 
-
+        currentPage.value = p; // 確保全域的頁碼同步更新
+      
         // 除錯用：打開瀏覽器 F12 看看有沒有印出資料
         console.log("成功抓取資料:", res.data.content);
+        console.log(`成功載入第 ${p + 1} 頁，每頁 ${pageSize.value} 筆`);
         
     } catch (error) {
         console.error('取得資料失敗:', error);
@@ -310,6 +321,44 @@ const goTo = (routeName) => {
 }
 .search-bar input {
   flex: 1;
+}
+
+.page-select-wrapper {
+  display: flex;
+  width: 120px;
+  margin-top: 10px;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  padding: 0 15px;
+  border: 2px solid #D4A574;
+  border-radius: 50px; /* 跟搜尋框一樣的圓角 */
+  color: #4A2C15;
+  font-weight: bold;
+}
+
+.page-select-wrapper label {
+  font-size: 0.9rem;
+  color: #8B4513;
+  white-space: nowrap;
+}
+
+/* 下拉選單本體 */
+.page-select {
+  border: none;
+  background: transparent;
+  color: #4A2C15;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  padding: 0.5rem 0;
+}
+
+/* 針對下拉選單內容進行微調 */
+.page-select option {
+  background-color: #FFF8E7;
+  color: #4A2C15;
 }
 
 h1, h2 {

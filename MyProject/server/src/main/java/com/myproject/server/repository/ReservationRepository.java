@@ -17,17 +17,17 @@ public interface ReservationRepository extends JpaRepository<Reservations, Long>
     List<Reservations> findByReservationId(Long reservationId);
 
     @Query(value = "SELECT * FROM reservations r WHERE " +
-            "LOWER(r.name) LIKE LOWER(CONCAT('%', :pattern, '%')) OR " +
-            "LOWER(r.email) LIKE LOWER(CONCAT('%', :pattern, '%')) OR " +
-            "r.phone LIKE CONCAT('%', :pattern, '%') OR " +
-            "r.message LIKE CONCAT('%', :pattern, '%') OR " +
-            "CAST(r.resv_date AS CHAR) LIKE CONCAT('%', :pattern, '%') OR " +
-            "CAST(r.people AS CHAR) LIKE CONCAT('%', :pattern, '%') OR " +
-            "CAST(r.reservation_id AS CHAR) LIKE CONCAT('%', :pattern, '%') " +
+            "LOWER(r.name) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
+            "LOWER(r.email) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
+            "r.phone LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
+            "r.message LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
+            "TO_CHAR(r.resv_date) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
+            "TO_CHAR(r.people) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
+            "TO_CHAR(r.reservation_id) LIKE CONCAT(CONCAT('%', :pattern), '%') " +
             "ORDER BY r.resv_date DESC",
             countQuery = "SELECT count(*) FROM reservations r WHERE " +
-                    "LOWER(r.name) LIKE LOWER(CONCAT('%', :pattern, '%')) OR " +
-                    "LOWER(r.email) LIKE LOWER(CONCAT('%', :pattern, '%'))",
+                    "LOWER(r.name) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
+                    "LOWER(r.email) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%'))",
             nativeQuery = true)
     Page<Reservations> findByAllFields(@Param("pattern") String pattern, Pageable pageable);
 

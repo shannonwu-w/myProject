@@ -55,10 +55,10 @@ public class ReservationController {
     }
 
     //查看全部的訂位
-    @GetMapping("/all-reservations")
-    public List<ReservationsDto> allReservations(){
-        return this.reservationService.allReservations();
-    }
+//    @GetMapping("/all-reservations")
+//    public List<ReservationsDto> allReservations(){
+//        return this.reservationService.allReservations();
+//    }
 
     //得到要編輯的訂位資料
     @GetMapping("/edit/{reservationId}")
@@ -75,7 +75,7 @@ public class ReservationController {
             // ✅ 現在 Service 預期有一個 Pageable 參數，所以不會報錯了
             return reservationService.allReservations(pageable);
         } else {
-            return reservationService.searchReservations(keyword.trim(), pageable);
+            return reservationService.getReservations(keyword.trim(), pageable);
         }
     }
 

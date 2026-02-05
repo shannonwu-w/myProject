@@ -3,11 +3,11 @@
     <h1>📋 顧客訂位總覽</h1>
     
     <div class="btn-group">
-      <router-link to="/adminpage" class="btn">🏠 回管理員首頁</router-link>
-      <router-link to="/all-users" class="btn">👤 使用者管理</router-link>
-      <router-link to="/bookingpage" class="btn">🖊️ 訂位頁面</router-link>
-      <router-link to="/homepage" class="btn">🐱 喵喵貓咖首頁</router-link>
-      <button @click="handleLogout" class="btn">🚪 登出</button>
+      <router-link to="/adminpage" class="btn">回管理員首頁</router-link>
+      <router-link to="/all-users" class="btn">使用者管理</router-link>
+      <router-link to="/bookingpage" class="btn">訂位頁面</router-link>
+      <router-link to="/homepage" class="btn">喵喵貓咖首頁</router-link>
+      <button @click="handleLogout" class="btn">🚪登出</button>
     </div>
   <div class="search-container">
       <input 

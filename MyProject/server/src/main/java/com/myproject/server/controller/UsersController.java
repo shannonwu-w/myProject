@@ -60,7 +60,7 @@ public class UsersController {
 
     @GetMapping("/admin/all-users")
     public List<UsersDto> allUserList(){
-      return usersService.findAllUsers();
+      return usersService.findAll();
     }
 
     @PostMapping("/admin/update-user")

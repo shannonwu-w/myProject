@@ -65,11 +65,39 @@
         </tr>
       </tbody>
     </table>
+     <div class="pagination-controls">
+      <div class="page-select-wrapper">
+      <label for="pageSize">顯示：</label>
+      <select v-model="pageSize" @change="fetchReservations(0)" class="page-select">
+        <option :value="5">5 筆</option>
+        <option :value="10">10 筆</option>
+        <option :value="20">20 筆</option>
+      </select>
+      </div>
+ 
+      <button 
+    @click="fetchReservations(currentPage - 1)" 
+    :disabled="currentPage === 0"
+    class="page-btn"
+  >
+    上一頁
+  </button>
+  
+  <span class="page-info">第 {{ currentPage + 1 }} 頁 / 共 {{ totalPages }} 頁</span>
+  
+  <button 
+    @click="fetchReservations(currentPage + 1)" 
+    :disabled="currentPage + 1 >= totalPages"
+    class="page-btn"
+  >
+    下一頁
+  </button>
+</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -80,50 +108,43 @@ const userrole = ref();
 const reservationList = ref([]);
 const displayList = ref([]);
 const searchQuery = ref('');
+const currentPage = ref(0);  // 目前頁碼
+const totalPages = ref(0);   // 總頁數
+const pageSize = ref(10);    // 每頁幾筆
 
-
-
-const fetchReservations = async () => {
+const fetchReservations = async (page = 0) => {
   try {
-    const response = await axios.get('/api/reservation/all-reservations');
-    if (response && response.data) {
-      // 排序並儲存
-      const sortedData = response.data.sort((a, b) => new Date(b.resvDate) - new Date(a.resvDate));
-      reservationList.value = sortedData;
-      displayList.value = [...sortedData]; // 同步更新顯示清單
-    }
+    const response = await axios.get('/api/reservation/search', {
+      params: { 
+        keyword: searchQuery.value, 
+        page: page, 
+        size: pageSize.value 
+      }
+    });
+    
+    // Page 物件的結構處理
+    displayList.value = response.data.content; 
+    totalPages.value = response.data.totalPages;
+    currentPage.value = page;
   } catch (error) {
     console.error("API 請求失敗：", error);
   }
 };
-  // 讓最新的訂位日期排在前面
-// reservationList.value.sort((a, b) => new Date(b.resvDate) - new Date(a.resvDate));
-// displayList.value = [...reservationList.value];
-
 
 
 // 🔍 搜尋功能 (前端過濾)
-const handleSearch = async () => {
-  if (!searchQuery.value.trim()) {
-    await fetchReservations(); // 如果沒輸入就抓全部
-    return;
-  }
-
-  try {
-    const response = await axios.get('/api/reservation/search', {
-      params: { keyword: searchQuery.value }
-    });
-    // 💡 後端現在回傳的是 List<ReservationsDto>，直接塞給 displayList
-    displayList.value = response.data; 
-  } catch (error) {
-    console.error("後端搜尋失敗", error);
-  }
+const handleSearch = () => {
+  fetchReservations(0);
 };
+
+
+
 
 // 🔄 重設功能
 const resetSearch = () => {
   searchQuery.value = '';
   displayList.value = [...reservationList.value];
+  fetchReservations(0);
 };
 
 
@@ -145,7 +166,7 @@ onMounted(async () => {
     router.push('/homepage');
     return;
   }
-  await fetchReservations();
+  await fetchReservations(0);
 });
 
 // 4. 操作邏輯
@@ -233,8 +254,10 @@ h1 {
 }
 .search-container {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap; /* 螢幕小時會自動換行 */
+  gap: 12px;
   justify-content: center;
+  align-items: center;
   margin-bottom: 1.5rem;
 }
 .search-btn{
@@ -328,4 +351,73 @@ tr:hover {
   background-color: #a52a2a;
   color: #fff0e6;
 }
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  background-color: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.page-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.page-info {
+  font-weight: bold;
+  color: #5a3106;
+}
+
+
+/* 下拉選單外層容器 */
+.page-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  padding: 0 15px;
+  border: 2px solid #D4A574;
+  border-radius: 50px; /* 跟搜尋框一樣的圓角 */
+  color: #4A2C15;
+  font-weight: bold;
+}
+
+.page-select-wrapper label {
+  font-size: 0.9rem;
+  color: #8B4513;
+  white-space: nowrap;
+}
+
+/* 下拉選單本體 */
+.page-select {
+  border: none;
+  background: transparent;
+  color: #4A2C15;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  padding: 0.5rem 0;
+}
+
+/* 針對下拉選單內容進行微調 */
+.page-select option {
+  background-color: #FFF8E7;
+  color: #4A2C15;
+}
+
 </style>

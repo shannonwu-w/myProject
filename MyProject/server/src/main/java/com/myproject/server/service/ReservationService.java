@@ -10,6 +10,8 @@ import com.myproject.server.repository.ReservationRepository;
 import com.myproject.server.repository.TableListRepository;
 import com.myproject.server.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,15 +106,18 @@ public class ReservationService {
     }
 
 
-    public List<ReservationsDto> searchReservations(String keyword) {
-        String searchPattern = "%" + keyword + "%";
+    public Page<ReservationsDto> searchReservations(String keyword, Pageable pageable) {
+        String pattern = "%" + keyword + "%";
+        Page<Reservations> entityPage = reservationRepository.findByAllFields(pattern, pageable);
 
-        // 1. 從資料庫拿到 Entity 列表
-        List<Reservations> entities = reservationRepository.findByMultipleFields(searchPattern);
+        return entityPage.map(reservationsMapper::toDto);
+    }
 
-        // 2. 使用 Stream API 配合你的 Mapper 進行轉換
-        return entities.stream()
-                .map(reservationsMapper::toDto) // 💡 呼叫你的 toDto 方法
-                .collect(Collectors.toList());
+    public Page<ReservationsDto> allReservations(Pageable pageable) {
+        // 💡 呼叫 Repository 的分頁版本
+        Page<Reservations> entityPage = reservationRepository.findAll(pageable);
+
+        // 💡 使用 Page 的 map 方法進行 DTO 轉換
+        return entityPage.map(reservationsMapper::toDto);
     }
 }

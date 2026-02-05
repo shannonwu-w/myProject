@@ -4,7 +4,7 @@ import com.myproject.server.domain.dto.LoginDto;
 import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.exception.CertException;
 import com.myproject.server.service.CertService;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

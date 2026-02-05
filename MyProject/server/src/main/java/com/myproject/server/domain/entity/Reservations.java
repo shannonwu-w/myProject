@@ -1,6 +1,6 @@
 package com.myproject.server.domain.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class Reservations {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "RESERVATION_ID_SEQ")
-    @SequenceGenerator(sequenceName = "RESERVATION_ID_SEQ",allocationSize = 1)
+    @SequenceGenerator(name = "RESERVATION_ID_SEQ", sequenceName = "RESERVATION_ID_SEQ",allocationSize = 1)
     @Column(name = "RESERVATION_ID")
     private Long reservationId;
 

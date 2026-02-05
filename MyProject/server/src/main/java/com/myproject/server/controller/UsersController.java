@@ -4,7 +4,7 @@ import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.dto.UserProfileDto;
 import com.myproject.server.domain.dto.UsersDto;
 import com.myproject.server.service.UsersService;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

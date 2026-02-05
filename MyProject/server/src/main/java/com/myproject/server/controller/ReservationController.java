@@ -4,8 +4,10 @@ import com.myproject.server.domain.dto.ReservationsDto;
 import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.service.ReservationService;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -65,19 +67,17 @@ public class ReservationController {
     }
 
     @GetMapping("/search")
-    public List<ReservationsDto> searchReservations(@RequestParam(required = false) String keyword) {
+    public Page<ReservationsDto> searchReservations(
+            @RequestParam(required = false) String keyword,
+            Pageable pageable) {
 
-            // 如果關鍵字為空，直接回傳所有資料，否則執行搜尋
-            List<ReservationsDto> results;
-            if (keyword == null || keyword.trim().isEmpty()) {
-                results = reservationService.allReservations();
-            } else {
-                results = reservationService.searchReservations(keyword.trim());
-            }
-            return results;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // ✅ 現在 Service 預期有一個 Pageable 參數，所以不會報錯了
+            return reservationService.allReservations(pageable);
+        } else {
+            return reservationService.searchReservations(keyword.trim(), pageable);
+        }
     }
-
-
 
 
 

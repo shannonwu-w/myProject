@@ -103,4 +103,16 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+
+    public List<ReservationsDto> searchReservations(String keyword) {
+        String searchPattern = "%" + keyword + "%";
+
+        // 1. 從資料庫拿到 Entity 列表
+        List<Reservations> entities = reservationRepository.findByMultipleFields(searchPattern);
+
+        // 2. 使用 Stream API 配合你的 Mapper 進行轉換
+        return entities.stream()
+                .map(reservationsMapper::toDto) // 💡 呼叫你的 toDto 方法
+                .collect(Collectors.toList());
+    }
 }

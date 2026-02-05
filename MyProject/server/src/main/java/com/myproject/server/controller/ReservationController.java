@@ -64,6 +64,20 @@ public class ReservationController {
         return this.reservationService.getResvEditData(reservationId);
     }
 
+    @GetMapping("/search")
+    public List<ReservationsDto> searchReservations(@RequestParam(required = false) String keyword) {
+
+            // 如果關鍵字為空，直接回傳所有資料，否則執行搜尋
+            List<ReservationsDto> results;
+            if (keyword == null || keyword.trim().isEmpty()) {
+                results = reservationService.allReservations();
+            } else {
+                results = reservationService.searchReservations(keyword.trim());
+            }
+            return results;
+    }
+
+
 
 
 

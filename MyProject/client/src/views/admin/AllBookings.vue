@@ -9,16 +9,17 @@
       <router-link to="/homepage" class="btn">🐱 喵喵貓咖首頁</router-link>
       <button @click="handleLogout" class="btn">🚪 登出</button>
     </div>
-    <div class="search-container">
+  <div class="search-container">
       <input 
         type="text" 
         v-model="searchQuery" 
-        placeholder="請輸入姓名、電話或 Email 進行搜尋..."
+        placeholder="請輸入姓名、電話或 Email..."
         class="search-input"
+        @keyup.enter="handleSearch" 
       />
-      <button class="search-btn">🔍 搜尋</button>
-    </div>
-
+      <button @click="handleSearch" class="search-btn">🔍 搜尋</button>
+      <button @click="resetSearch" class="reset-btn">🔄 重設</button>
+  </div>
     <table>
       <thead>
         <tr>
@@ -34,7 +35,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="reservation in reservationList" :key="reservation.reservationId">
+        <tr v-for="reservation in displayList" :key="reservation.reservationId">
           <td>{{ reservation.reservationId }}</td>
           <td>{{ reservation.resvDate }}</td>
           <td>
@@ -59,7 +60,7 @@
             </div>
           </td>
         </tr>
-        <tr v-if="filteredReservations.length === 0">
+        <tr v-if="displayList.length === 0">
           <td colspan="9" style="padding: 2rem; color: #8B4513;">找不到相符的訂位資料</td>
         </tr>
       </tbody>
@@ -77,23 +78,55 @@ const userrole = ref();
 
 // 2. 訂位資料列表 (模擬從 API 獲取)
 const reservationList = ref([]);
+const displayList = ref([]);
 const searchQuery = ref('');
 
 
-// 3. 模擬獲取資料
+
 const fetchReservations = async () => {
   try {
     const response = await axios.get('/api/reservation/all-reservations');
     if (response && response.data) {
-      reservationList.value = response.data;
+      // 排序並儲存
+      const sortedData = response.data.sort((a, b) => new Date(b.resvDate) - new Date(a.resvDate));
+      reservationList.value = sortedData;
+      displayList.value = [...sortedData]; // 同步更新顯示清單
     }
   } catch (error) {
-    console.error("API 請求失敗：", error.message);
-    if (error.response) {
-      console.error("狀態碼：", error.response.status);
-    }
+    console.error("API 請求失敗：", error);
   }
 };
+  // 讓最新的訂位日期排在前面
+// reservationList.value.sort((a, b) => new Date(b.resvDate) - new Date(a.resvDate));
+// displayList.value = [...reservationList.value];
+
+
+
+// 🔍 搜尋功能 (前端過濾)
+const handleSearch = async () => {
+  if (!searchQuery.value.trim()) {
+    await fetchReservations(); // 如果沒輸入就抓全部
+    return;
+  }
+
+  try {
+    const response = await axios.get('/api/reservation/search', {
+      params: { keyword: searchQuery.value }
+    });
+    // 💡 後端現在回傳的是 List<ReservationsDto>，直接塞給 displayList
+    displayList.value = response.data; 
+  } catch (error) {
+    console.error("後端搜尋失敗", error);
+  }
+};
+
+// 🔄 重設功能
+const resetSearch = () => {
+  searchQuery.value = '';
+  displayList.value = [...reservationList.value];
+};
+
+
 
 onMounted(async () => {
   // 1. 權限檢查
@@ -144,19 +177,6 @@ const handleLogout = async () => {
   router.push('/login')
 }
 
-const filteredReservations = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim();
-  if (!query) {
-    return reservationList.value;
-  }
-  return reservationList.value.filter(item => {
-    return (
-      item.name?.toLowerCase().includes(query) ||
-      item.phone?.includes(query) ||
-      item.email?.toLowerCase().includes(query)
-    );
-  });
-});
 
 </script>
 
@@ -212,16 +232,17 @@ h1 {
   color: #4A2C15;
 }
 .search-container {
-  margin-bottom: 1.5rem;
   display: flex;
+  gap: 10px;
   justify-content: center;
+  margin-bottom: 1.5rem;
 }
 .search-btn{
   margin-left: 10px;
   padding: 0.7rem 1.5rem;
   background-color: #ddc6af; 
+  border: 2px solid #5a3106;
   color: #4A2C15;
-  border: none;
   border-radius: 50px; 
   font-weight: bold;
   cursor: pointer;
@@ -250,6 +271,20 @@ h1 {
 .search-input:focus {
   border-color: #8B4513;
   box-shadow: 0 0 8px rgba(139, 69, 19, 0.2);
+}
+
+.reset-btn {
+  padding: 0.7rem 1.2rem;
+  background-color: #ffffff;
+  color: #4A2C15;
+  border: 2px solid #D4A574;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.reset-btn:hover {
+  background-color: #D4A574;
 }
 
 table {

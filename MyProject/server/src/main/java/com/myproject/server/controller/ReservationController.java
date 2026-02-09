@@ -71,11 +71,10 @@ public class ReservationController {
             @RequestParam(required = false) String keyword,
             Pageable pageable) {
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            // ✅ 現在 Service 預期有一個 Pageable 參數，所以不會報錯了
+        if (keyword == null) {
             return reservationService.allReservations(pageable);
         } else {
-            return reservationService.getReservations(keyword.trim(), pageable);
+            return reservationService.getReservations(keyword, pageable);
         }
     }
 

@@ -19,6 +19,8 @@
         :loading="loading"
         v-model:pagination="pagination"
         @request="onRequest"
+        :rows-per-page-options="[5, 10, 20]"
+
         flat
       >
         <template v-slot:top-right>
@@ -149,7 +151,7 @@ const roleOptions = [
 
 // QTable 欄位定義
 const columns = [
-  { name: 'username', label: '使用者名稱', field: 'username', align: 'left'},
+  { name: 'username', label: '使用者名稱', field: 'username', align: 'left',sortBy: true},
   { name: 'email', label: '帳號(Email)', field: 'email', align: 'left' },
   { name: 'phone', label: '電話', field: 'phone', align: 'center' },
   { name: 'role', label: '身分', field: 'role', align: 'center', format: val=>val==='ADMIN'? '管理員':'一般使用者' },
@@ -157,9 +159,10 @@ const columns = [
 ];
 
 const pagination = ref({
+  
   page: 1,
   rowsPerPage: 5,
-  rowsNumber: 0 // 總筆數，由後端回傳
+  rowsNumber: 0
 });
 
 onMounted(() => {
@@ -182,8 +185,13 @@ onMounted(() => {
 // 處理 QTable 的分頁請求
 const onRequest = (props) => {
   const { page, rowsPerPage } = props.pagination;
-  pagination.value.page = page;
-  pagination.value.rowsPerPage = rowsPerPage;
+   pagination.value.page = page;
+
+  // 🔥 重點在這
+  pagination.value.rowsPerPage =
+    rowsPerPage === 0
+      ? pagination.value.rowsNumber // 全部
+      : rowsPerPage;
   fetchUsers();
 };
 

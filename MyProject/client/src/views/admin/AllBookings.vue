@@ -194,6 +194,8 @@ const columns = [
 ]
 
 const pagination = ref({
+  sortBy:'username',
+  descending: true,
   page: 1,           // Quasar pagination 從 1 開始
   rowsPerPage: 5,    // 每頁幾筆
   rowsNumber: 0      // 總筆數 (選填)

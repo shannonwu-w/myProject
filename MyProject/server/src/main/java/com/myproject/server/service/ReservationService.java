@@ -113,7 +113,7 @@ public class ReservationService {
         return entityPage.map(reservationsMapper::toDto);
     }
 
-    public Page<ReservationsDto> allReservations(Pageable pageable) {
+    public Page<ReservationsDto> getAllReservations(Pageable pageable) {
         // 💡 呼叫 Repository 的分頁版本
         Page<Reservations> entityPage = reservationRepository.findAll(pageable);
 

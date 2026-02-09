@@ -72,7 +72,7 @@ public class ReservationController {
             Pageable pageable) {
 
         if (keyword == null) {
-            return reservationService.allReservations(pageable);
+            return reservationService.getAllReservations(pageable);
         } else {
             return reservationService.getReservations(keyword, pageable);
         }

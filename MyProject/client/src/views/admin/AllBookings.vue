@@ -390,7 +390,7 @@ tr:hover {
   background-color: #ffffff;
   padding: 0 15px;
   border: 2px solid #D4A574;
-  border-radius: 50px; /* 跟搜尋框一樣的圓角 */
+  border-radius: 150px; /* 跟搜尋框一樣的圓角 */
   color: #4A2C15;
   font-weight: bold;
 }

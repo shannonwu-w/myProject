@@ -548,6 +548,7 @@ const handleLogout = async () => {
   font-size: 1.5rem;
   color: #8B4513;
   margin-bottom: 1.5rem;
+  font-weight: 300;
 }
 
 .menu-item {

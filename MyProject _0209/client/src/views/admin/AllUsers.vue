@@ -1,0 +1,412 @@
+<template>
+
+  <div class="main-layout">
+    <div class="container">
+      <h1>喵喵貓咖使用者管理系統 🐱☕</h1>
+
+
+      <div v-if="currentUser.role === 'admin'" class="nav-bar">
+        <button @click="goTo('adminpage')" class="button">回管理員首頁</button>
+        <button @click="goTo('all-bookings')" class="button">訂位管理</button>
+        <button @click="goTo('homepage')" class="button">喵喵貓咖訂位系統</button>
+        <button @click="handleLogout" class="button">🚪登出</button>
+      </div>
+      <div class="search-bar">
+      <input v-model="searchKeyword" placeholder="搜尋姓名、電話或 Email..." @keyup.enter="fetchUsers" />
+        <button @click="fetchUsers" class="button">🔍 搜尋</button>
+      </div>
+
+
+      <p v-if="message" class="status-message">{{ message }}</p>
+
+
+      <table>
+        <thead>
+          <tr>
+            <th>使用者名稱</th>
+            <th>帳號(電子信箱)</th>
+            <th>電話</th>
+            <th>身分</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in userList" :key="user.userId">
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{user.phone}}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <button @click="editUser(user)" class="button">✏️ 修改</button>
+              <button @click="deleteUser(user)" class="button delete">🗑️ 刪除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="page-select-wrapper">
+      <label for="pageSize">顯示：</label>
+      <select v-model="pageSize" @change="currentPage = 0; fetchUsers(0)" class="page-select">
+        <option :value="5">5 筆</option>
+        <option :value="10">10 筆</option>
+        <option :value="20">20 筆</option>
+      </select>
+      </div>
+        <button :disabled="currentPage === 0" @click="currentPage--; fetchUsers()" class="button">上一頁</button>
+        <span>第 {{ currentPage + 1 }} 頁 / 共 {{ totalPages }} 頁</span>
+        <button :disabled="currentPage >= totalPages - 1" @click="currentPage++; fetchUsers()" class="button">下一頁</button>
+
+        
+      </div>
+
+    </div>
+   
+
+    <div v-if="selectedUser" class="container">
+      <h2>🔧 修改使用者資料</h2>
+      <div class="form-group">
+        <label>使用者名稱：</label>
+        <input v-model="selectedUser.username" type="text" required />
+      </div>
+      <div class="form-group">
+        <label>帳號(電子信箱)：</label>
+        <input v-model="selectedUser.email" type="email" required />
+      </div>
+      <div class="form-group">
+        <label>電話：</label>
+        <input v-model="selectedUser.phone" type="phone" required />
+      </div>
+      <div class="form-group">
+        <label>身分：</label>
+        <select v-model="selectedUser.role">
+          <option value="USER">一般使用者</option>
+          <option value="ADMIN">管理員</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>新密碼（留空不修改）：</label>
+        <input v-model="selectedUser.password" type="password" />
+        <span class="hint">若未輸入，將保留原密碼</span>
+      </div>
+      <button @click="saveUpdate" class="button">💾 儲存修改</button>
+      <button @click="selectedUser = null" class="button">取消</button>
+    </div>
+
+
+    <div class="container">
+      <h2>➕ 新增使用者</h2>
+        <div class="form-group">
+        <label>使用者名稱：</label>
+        <input v-model="newUser.username" type="text" required />
+      </div>
+      <div class="form-group">
+        <label>帳號(email)：</label>
+        <input v-model="newUser.email" type="email" required />
+      </div>      
+      <div class="form-group">
+        <label>密碼：</label>
+        <input v-model="newUser.password" type="password" required />
+      </div>
+      <div class="form-group">
+      <label>電話：</label>
+        <input v-model="newUser.phone" type="phone" required />
+      </div>
+      <div class="form-group">
+        <label>身分：</label>
+        <select v-model="newUser.role">
+          <option value="USER">一般使用者</option>
+          <option value="ADMIN">管理員</option>
+        
+        </select>
+      </div>
+      <button @click="addUser" class="button">➕ 建立帳號</button>
+    </div>
+
+
+    <div class="footer">
+      <p>🐾 本系統僅限喵喵貓咖管理員使用！</p>
+    </div>
+</div>
+
+</template>
+
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import router from '@/router';
+import axios from 'axios';
+const userrole = ref();
+const currentUser = ref({ role: 'admin' }); // 應從 API 或 Store 取得
+const userList = ref([]);
+const message = ref('');
+const selectedUser = ref(null);
+const newUser = ref({
+  username: '',
+  email: '',
+  password: '',
+  phone:'',
+  role: ''
+});
+
+const searchKeyword = ref(''); // 新增搜尋關鍵字變數
+const currentPage = ref(0);   // 記錄目前頁碼
+const totalPages = ref(0);
+const pageSize = ref(5);
+
+// --- 生命週期 ---
+onMounted(() => {
+  checkAuth();
+  fetchUsers();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+
+// --- 方法 (Methods) ---
+
+onMounted(async () => {
+      const storedToken = localStorage.getItem('userCert');
+      
+
+      if (!storedToken) {
+          alert('請先登入');
+          router.push('/login');       
+      }
+      const userCert = JSON.parse(storedToken);
+      userrole.value = userCert.role;
+      
+         
+          if( userrole.value!== 'ADMIN'){
+              alert('您沒有權限');
+              router.push('/homepage');
+                    }      
+         
+ 
+ 
+});
+const checkAuth = () => {
+  if (currentUser.value.role !== 'admin') {
+    alert("⚠️ 您沒有管理員權限，將返回使用者首頁");
+    // 這裡通常使用 router.push('/userpage')
+  }
+};
+
+const fetchUsers = async (p = currentPage.value) => {
+    try {
+        const res = await axios.get('/api/admin/find-users', {
+            params: {
+                keyword: searchKeyword.value,
+                page:p, // 目前頁碼 (0-based)
+                size: pageSize.value
+            }
+        });
+
+        // 2. 更新資料列表
+        userList.value = res.data.content; 
+        totalPages.value = res.data.totalPages; 
+        currentPage.value = p; // 確保全域的頁碼同步更新
+      
+        // 除錯用：打開瀏覽器 F12 看看有沒有印出資料
+        console.log("成功抓取資料:", res.data.content);
+        console.log(`成功載入第 ${p + 1} 頁，每頁 ${pageSize.value} 筆`);
+        
+    } catch (error) {
+        console.error('取得資料失敗:', error);
+        message.value = '無法載入使用者資料，請稍後再試。';
+    }
+};
+const editUser = (user) => {
+  // 深拷貝一份資料出來修改，避免直接影響表格
+  selectedUser.value = { ...user, password: '' };
+};
+
+
+const saveUpdate = async () => {
+  console.log("準備送出的資料：", JSON.stringify(selectedUser.value));
+  try {
+    // 修正路徑：updsateUser -> updateUser
+    const response = await axios.post('/api/admin/update-user', selectedUser.value);
+    
+    // 注意：如果後端回傳的是純字串 "成功"，response.data 就不是物件
+    // 根據你之前的 Controller 回傳 String，這裡應調整：
+    if (response.data.includes("成功") || response.data === "success") {
+      alert("✅ 更新成功");
+      selectedUser.value = null;
+      await fetchUsers();
+    } else {
+      message.value = '❌ 伺服器訊息：' + response.data;
+    }
+  } catch (error) {
+    console.error("更新失敗", error);
+    message.value = '❌ 連線失敗，請檢查網路或後端 Log';
+  }
+};
+
+
+const deleteUser = async (user) => {
+  if (confirm(`確定要刪除使用者「${user.username}」嗎？`)) {
+    const response = await axios.post('/api/admin/deleteUser', null ,{
+      params:{userId:user.userId}
+    });
+    console.log('刪除 ID:', user.userId);
+    console.log(response);
+    message.value = '使用者已刪除';
+    fetchUsers();
+  }
+};
+
+
+const addUser = async () => {
+  try {
+    // 務必加上這行發送給後端
+    const response = await axios.post('/api/admin/update-user', newUser.value);
+    if (response.data.includes("成功")) {
+      alert("➕ 帳號建立成功！");
+      newUser.value = { username: '', email: '', password: '', phone: '', role: 'USER' };
+      await fetchUsers();
+    }
+  } catch (error) {
+    message.value = '❌ 新增失敗';
+    console.log(error);
+  }
+};
+
+const handleLogout = () => {
+  try{
+    localStorage.removeItem('userCert');
+    alert("🐾 登出成功");
+    router.push('/homepage');
+
+  }catch(error){
+    console.error("登出請求失敗:", error);
+    localStorage.clear();
+    router.push('/homepage');
+   
+  }
+};
+
+
+const goTo = (routeName) => {
+ router.push({ name: routeName }); 
+};
+
+
+</script>
+
+
+<style scoped>
+.main-layout {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #D4A574 0%, #8B4513 100%);
+  color: #4A2C15;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.container {
+  background: #FFF8E7;
+  margin: 1rem auto;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(139,69,19,0.3);
+  width: 90%;
+  max-width: 800px;
+}
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+.search-bar input {
+  flex: 1;
+}
+
+.page-select-wrapper {
+  display: flex;
+  width: 120px;
+  margin-top: 10px;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  padding: 0 15px;
+  border: 2px solid #D4A574;
+  border-radius: 50px; /* 跟搜尋框一樣的圓角 */
+  color: #4A2C15;
+  font-weight: bold;
+}
+
+.page-select-wrapper label {
+  font-size: 0.9rem;
+  color: #8B4513;
+  white-space: nowrap;
+}
+
+/* 下拉選單本體 */
+.page-select {
+  border: none;
+  background: transparent;
+  color: #4A2C15;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  padding: 0.5rem 0;
+}
+
+/* 針對下拉選單內容進行微調 */
+.page-select option {
+  background-color: #FFF8E7;
+  color: #4A2C15;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #8B4513;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+th, td {
+  border: 1px solid #8B4513;
+  padding: 10px;
+  text-align: center;
+}
+th {
+  background-color: #D4A574;
+}
+.button {
+  display: inline-block;
+  margin: 0.5rem 0.2rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  color: #FFF8E7;
+  background-color: #8B4513;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.button:hover { transform: scale(1.05); }
+.button.delete { background-color: #B22222; }
+.form-group { 
+    margin-bottom: 1rem;
+    /* width: 500px; */
+}
+input, select {
+    box-sizing: border-box; 
+    width: 100%;           
+    height: 40px;       
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+.hint { font-size: 0.9rem; color: #555; }
+.footer { color: #E8D3B2; padding: 2rem; }
+
+</style>
+

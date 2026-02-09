@@ -1,124 +1,142 @@
+
 <template>
-  <div class="admin-dashboard">
-    <div class="container">
-      <h1>喵喵貓咖管理系統 🐱☕</h1>
+  <q-page class="admin-dashboard flex flex-center">
+    
+    <q-card class="container shadow-10">
+      <q-card-section class="text-center">
+        <h1 class="text-weight-bold">喵喵貓咖管理系統</h1>
+      </q-card-section>
 
-      <div>
-        <router-link to="/all-users" class="button">👤 使用者管理</router-link>
-        <router-link to="/all-bookings" class="button">🧾 訂位管理</router-link>
-        <router-link to="/homepage" class="button">🏠 喵喵貓咖訂位系統</router-link>
-         <button @click="handleLogout" class="button logout-btn">🚪 登出</button>
-      </div>
+      <q-card-section class="q-pa-md row justify-center q-gutter-md">
+        <q-btn
+          to="/all-users"
+          icon="person"
+          label="使用者管理"
+          class="admin-btn"
+          rounded
+          size="lg"
+        />
+        
+        <q-btn
+          to="/all-bookings"
+          icon="receipt_long"
+          label="訂位管理"
+          class="admin-btn"
+          rounded
+          size="lg"
+        />
 
-     
-    </div>
+        <q-btn
+          to="/homepage"
+          icon="home"
+          label="喵喵貓咖訂位系統"
+          class="admin-btn"
+          rounded
+          size="lg"
+        />
 
-    <div class="footer">
-      <p>🐾 本系統僅限喵喵貓咖管理員使用！</p>
-    </div>
-  </div>
+        <q-btn
+          @click="handleLogout"
+          icon="logout"
+          label="登出"
+          class="admin-btn logout-btn"
+          rounded
+          size="lg"
+        />
+      </q-card-section>
+
+      <q-card-section class="footer">
+        <p>🐾 本系統僅限喵喵貓咖管理員使用！</p>
+      </q-card-section>
+    </q-card>
+  </q-page>
 </template>
 
 <script setup>
-import { onMounted,ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 
 const router = useRouter();
-const userrole = ref();
+const $q = useQuasar();
+const userrole = ref('');
 
-onMounted(async () => {
-      const storedToken = localStorage.getItem('userCert');
-      
+onMounted(() => {
+  const storedToken = localStorage.getItem('userCert');
 
-      if (!storedToken) {
-          alert('請先登入');
-          router.push('/login');       
-      }
-      const userCert = JSON.parse(storedToken);
-      userrole.value = userCert.role;
-      
-         
-          if(userrole.value!== 'ADMIN'){
-              alert('您沒有權限');
-              router.push('/homepage');
-                    }      
-         
- 
- 
+  if (!storedToken) {
+    $q.notify({ type: 'warning', message: '請先登入' });
+    router.push('/login');
+    return;
+  }
+
+  const userCert = JSON.parse(storedToken);
+  userrole.value = userCert.role;
+
+  if (userrole.value.toUpperCase() !== 'ADMIN') {
+    $q.notify({ type: 'negative', message: '您沒有權限進入管理系統' });
+    router.push('/homepage');
+  }
 });
 
-const handleLogout = async () => {
-  try{
+const handleLogout = () => {
+  $q.dialog({
+    title: '確認登出',
+    message: '您確定要離開喵喵貓咖管理系統嗎？',
+    cancel: true,
+    persistent: true,
+    color: 'brown-8'
+  }).onOk(() => {
     localStorage.removeItem('userCert');
-    alert("🐾 登出成功");
+    $q.notify({
+      color: 'brown-9',
+      message: '🐾 登出成功',
+      icon: 'door_open'
+    });
     router.push('/homepage');
-
-  }catch(error){
-    console.error("登出請求失敗:", error);
-    localStorage.clear();
-    router.push('/homepage');
-   
-  }
- 
+  });
 };
 </script>
 
 <style scoped>
-/* 這裡封裝原本的 CSS 樣式 */
+/* 背景與佈局 */
 .admin-dashboard {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  margin: 0;
-  padding: 0;
   background: linear-gradient(135deg, #D4A574 0%, #8B4513 100%);
-  color: #4A2C15;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
+/* 容器樣式微調 */
 .container {
   background: #FFF8E7;
-  margin: 5rem auto;
-  padding: 3rem 2rem;
+  padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(139,69,19,0.3);
-  text-align: center;
   width: 90%;
   max-width: 600px;
-  animation: fadeInUp 1s ease forwards;
+  /* 加入你原本的向上淡入動畫 */
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 2rem;
   color: #8B4513;
-  text-shadow: 1px 1px 4px #D4A574;
+  text-shadow: 1px 1px 4px rgba(212, 165, 116, 0.5);
+  margin: 0.5rem 0 1.5rem 0;
 }
 
-.button {
-  display: inline-block;
-  margin: 20px;
-  padding: 15px ;
-  font-size: 1.2rem;
+/* 按鈕樣式：讓按鈕在小螢幕時能自適應 */
+.admin-btn {
+  width: 240px; 
   font-weight: bold;
   color: #FFF8E7;
   background-color: #8B4513;
-  border: none;
-  border-radius: 40px;
-  text-decoration: none;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  cursor: pointer;
 }
 
-.button:hover {
-  background-color: #A0522D;
-  transform: scale(1.05);
-}
 
-.logout-btn {
-  background-color: #5c3010; /* 深色一點作為區隔 */
+.footer {
+  text-align: center;
+  color: #8B4513;
+  opacity: 0.8;
+  font-size: 1.2rem;
 }
 
 @keyframes fadeInUp {
@@ -126,19 +144,13 @@ h1 {
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* RWD 手機版調整 */
 @media (max-width: 480px) {
-  .button {
-    width: 80%;
-    font-size: 1rem;
-    padding: 0.8rem 1rem;
+  .admin-btn {
+    width: 100%;
   }
-}
-
-.footer {
-  text-align: center;
-  color: #E8D3B2;
-  margin-top: auto;
-  padding: 2rem 1rem;
-  font-size: 0.9rem;
+  h1 {
+    font-size: 1.8rem;
+  }
 }
 </style>

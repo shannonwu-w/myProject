@@ -65,7 +65,13 @@ onMounted(() => {
   const storedToken = localStorage.getItem('userCert');
 
   if (!storedToken) {
-    $q.notify({ type: 'warning', message: '請先登入' });
+    $q.notify({ 
+      message: '請先登入',
+      color: 'brown-6', 
+      icon: 'pets',     
+      position: 'top', 
+      timeout: 1000
+    });
     router.push('/login');
     return;
   }
@@ -85,13 +91,14 @@ const handleLogout = () => {
     message: '您確定要離開喵喵貓咖管理系統嗎？',
     cancel: true,
     persistent: true,
-    color: 'brown-8'
+    color: 'brown-6'
   }).onOk(() => {
     localStorage.removeItem('userCert');
     $q.notify({
-      color: 'brown-9',
+      color: 'brown-6',
       message: '🐾 登出成功',
-      icon: 'door_open'
+      icon: 'door_open',
+      position: top
     });
     router.push('/homepage');
   });

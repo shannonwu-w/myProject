@@ -19,7 +19,6 @@
         :loading="loading"
         v-model:pagination="pagination"
         @request="onRequest"
-        binary-state-sort
         flat
       >
         <template v-slot:top-right>
@@ -150,7 +149,7 @@ const roleOptions = [
 
 // QTable 欄位定義
 const columns = [
-  { name: 'username', label: '使用者名稱', field: 'username', align: 'left', sortable: true },
+  { name: 'username', label: '使用者名稱', field: 'username', align: 'left'},
   { name: 'email', label: '帳號(Email)', field: 'email', align: 'left' },
   { name: 'phone', label: '電話', field: 'phone', align: 'center' },
   { name: 'role', label: '身分', field: 'role', align: 'center' },

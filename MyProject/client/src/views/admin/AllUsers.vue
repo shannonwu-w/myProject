@@ -22,7 +22,7 @@
         flat
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="searchKeyword" placeholder="搜尋..." @keyup.enter="fetchUsers">
+          <q-input dense debounce="300" v-model="searchKeyword" placeholder="搜尋..." @keyup.enter="fetchUsers">
             <template v-slot:append>
               <q-icon name="search" class="cursor-pointer" @click="fetchUsers" />
             </template>
@@ -114,7 +114,7 @@
           <q-select class="col-12 col-sm-6" v-model="newUser.role" :options="roleOptions" label="身分" dense filled emit-value map-options />
         </div>
         <div class="text-center">
-          <q-btn label="建立帳號" color="brown-8" icon="add" type="submit" rounded size="lg" />
+          <q-btn label="建立帳號" color="brown-5" icon="add" type="submit" rounded size="lg" />
         </div>
       </q-form>
     </div>
@@ -152,7 +152,7 @@ const columns = [
   { name: 'username', label: '使用者名稱', field: 'username', align: 'left'},
   { name: 'email', label: '帳號(Email)', field: 'email', align: 'left' },
   { name: 'phone', label: '電話', field: 'phone', align: 'center' },
-  { name: 'role', label: '身分', field: 'role', align: 'center' },
+  { name: 'role', label: '身分', field: 'role', align: 'center', format: val=>val==='ADMIN'? '管理員':'一般使用者' },
   { name: 'actions', label: '操作', align: 'center' }
 ];
 

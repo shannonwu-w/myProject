@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -85,6 +86,9 @@ public class UsersController {
 
     }
 
+
+
+  @Transactional
   @PostMapping("/admin/deleteUser")
   public void adminDeleteUser(@RequestParam Long userId){
         usersService.deleteUser(userId);

@@ -40,11 +40,9 @@ public class UsersService {
             user = new Users();
         }
 
-        // --- 改進點：使用 Mapper 取代多行 set ---
-        // 這行會自動把 dto 裡名稱相同的欄位 (email, username, phone, role) 填入 user
         usersMapper.updateEntityFromDto(dto, user);
 
-        // 處理密碼（特殊邏輯仍須手動處理，因為需要加密）
+        // 處理密碼
         if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
             String salt = Hash.getSalt();
             String passwordHash = Hash.getHash(dto.getPassword(), salt);

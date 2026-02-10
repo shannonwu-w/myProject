@@ -532,8 +532,9 @@ const handleLogout = async () => {
 }
 
 .menu-grid {
+  
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
   gap: 2rem;
 }
 
@@ -541,6 +542,7 @@ const handleLogout = async () => {
   background: linear-gradient(135deg, #fef8f0, #f5e6d3);
   border-radius: 20px;
   padding: 2rem;
+  margin-left: 50px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 

@@ -66,6 +66,7 @@ public class ReservationController {
         return this.reservationService.getResvEditData(reservationId);
     }
 
+    //查詢
     @GetMapping("/search")
     public Page<ReservationsDto> searchReservations(
             @RequestParam(required = false) String keyword,

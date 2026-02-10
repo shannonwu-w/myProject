@@ -30,6 +30,7 @@ public class UsersService {
         return usersPage.map(usersMapper::toDto);
     }
 
+    //新增、編輯方法
     @Transactional
     public void addUser(UsersDto dto) {
         Users user;
@@ -63,6 +64,8 @@ public class UsersService {
         dto.setEmail(user.getEmail());
         return dto;
     }
+
+    //使用者自行更新密碼
     @Transactional
     public UsersDto updateUserPassword(Long userId, UsersDto dto) {
 
@@ -85,6 +88,7 @@ public class UsersService {
         return dto;
     }
 
+    //刪除使用者
     public void deleteUser(@RequestParam Long userId){
         usersRepository.deleteById(userId);
     }

@@ -63,6 +63,7 @@ public class UsersController {
         return usersService.updateUserPassword(userId, dto);
     }
 
+    //查詢
     @GetMapping("/admin/find-users")
     public Page<UsersDto> allUserList(
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
@@ -71,6 +72,7 @@ public class UsersController {
         return usersService.findAllUsersByKeyword(keyword, pageable);
     }
 
+    //更新使用者
     @PostMapping("/admin/update-user")
     public String adminUpdateUser(@RequestBody UsersDto usersDto){
         String result;

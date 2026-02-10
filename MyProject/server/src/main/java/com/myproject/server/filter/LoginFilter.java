@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/api/userspage/*", "api/adminpage/*"})
+@WebFilter(urlPatterns = {"/api/*"})
 public class LoginFilter extends HttpFilter {
 
     @Override

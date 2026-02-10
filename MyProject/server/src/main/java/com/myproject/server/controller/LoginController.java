@@ -38,7 +38,10 @@ public class LoginController {
         } catch (CertException e) {
             // 5. 驗證失敗：回傳 401 並附帶錯誤訊息
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }finally {
+            session.removeAttribute("authcode");
         }
+
     }
 //    @GetMapping("/status")
 //    public ResponseEntity<?> getStatus(HttpSession session){

@@ -39,7 +39,7 @@
             dense
             clearable
             v-model="searchQuery"
-            label="姓名 / 電話 / Email"
+            label="輸入條件"
             class="col-12 col-md-6"
             @keyup.enter="handleSearch"
             

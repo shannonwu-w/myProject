@@ -4,7 +4,8 @@
       <h2>📅 {{ username }} 的歷史訂位紀錄</h2>
       <p>共 <strong>{{ reservations.length }}</strong> 筆訂位資料</p>
       <p class="notice-text">
-        ※ 最晚請在前一天晚上 11:59 前取消訂位，當天取消請來電 📞
+        ※ 最晚請在前一天晚上 11:59 前取消訂位 <br>
+        當天取消請來電 (02)2345-6789 📞
       </p>
 
       <div v-if="reservations.length === 0" class="alert-info">

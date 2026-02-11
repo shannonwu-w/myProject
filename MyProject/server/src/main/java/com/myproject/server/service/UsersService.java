@@ -72,9 +72,6 @@ public class UsersService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("使用者不存在"));
 
-        // 可修改的欄位
-//        user.setUsername(dto.getUsername());
-//        user.setPhone(dto.getPhone());
 
         // 如果有輸入新密碼，才更新
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {

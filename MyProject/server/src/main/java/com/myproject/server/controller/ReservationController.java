@@ -5,6 +5,8 @@ import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.service.ReservationService;
 import javax.servlet.http.HttpSession;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/reservation")
 public class ReservationController {
@@ -29,6 +32,7 @@ public class ReservationController {
     public ResponseEntity<?> createReservation(@RequestBody ReservationsDto dto, HttpSession session) {
         UserCert userCert = (UserCert) session.getAttribute("userCert");
 
+
         try {
             reservationService.makeReservation(dto, userCert);
             return ResponseEntity.ok(Map.of("message", "訂位成功！"));
@@ -39,8 +43,10 @@ public class ReservationController {
 
     //使用者查看自己的訂位紀錄
     @GetMapping("/history")
-    public List<ReservationsDto> myReservations(@RequestParam Long userId) {
-        return reservationService.getMyReservations(userId);
+    public List<ReservationsDto> myReservations(HttpSession session) {
+        UserCert userCert = (UserCert) session.getAttribute("userCert");
+        log.info("userCert  UserId----------------{}", userCert.getUserId());
+        return reservationService.getMyReservations(userCert.getUserId());
     }
 
     //刪除訂位

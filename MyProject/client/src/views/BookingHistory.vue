@@ -58,28 +58,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import router from '@/router';
+// import router from '@/router';
 
 
 const username = ref('訪客');
 const reservations = ref([]);
-const userId = ref('');
 onMounted(async () => {
-  const storedToken = localStorage.getItem('userCert');
-
-  if (!storedToken) {
-    alert('請先登入');
-    router.push('/login');
-    return;
-  }
-
-  const userCert = JSON.parse(storedToken);
-  username.value = userCert.username || '訪客';
-  userId.value = userCert.userId;
-
+  
   try {
     const res = await axios.get('/api/reservation/history', {
-      params: { userId: userId.value }
+     
     });
     reservations.value = res.data;
     console.log("後端回傳的資料內容:", res.data);
@@ -88,11 +76,12 @@ onMounted(async () => {
     alert('取得訂位紀錄失敗');
   }
 });
+
 // 判斷日期是否為明天（含）以後
 const isTomorrowOrLater = (dateStr) => {
   const reservationDate = new Date(dateStr);
   const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate());
+  tomorrow.setDate(tomorrow.getDate()+1);
   tomorrow.setHours(0, 0, 0, 0);
   
   return reservationDate >= tomorrow;

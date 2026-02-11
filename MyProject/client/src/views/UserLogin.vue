@@ -5,16 +5,16 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 定義表單資料（使用 email 登入）
+// 定義表單資料
 const loginForm = ref({
-  email: '',      // 改成 email
-  password: '',
+  email: 'twice@gmail',     
+  password: '123456',
   authcode: ''
 })
 
 // 錯誤訊息與驗證碼圖片路徑
 const errorMsg = ref('')
-const captchaUrl = ref('/api/authcode') // 加上 /api 前綴
+const captchaUrl = ref('/api/authcode')
 
 // 重新整理驗證碼
 const refreshAuthcode = () => {

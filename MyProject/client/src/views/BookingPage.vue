@@ -9,14 +9,14 @@ const router = useRouter()
 const isLoggedIn = ref(false)
 const memberProfile = ref(null)
 
-// =======================
+ 
 // 是否自動帶入會員資料
-// =======================
+
 const autoFill = ref(false)
 
-// =======================
+
 // 訂位表單
-// =======================
+
 const form = reactive({
   name: '',
   people: '',
@@ -27,9 +27,7 @@ const form = reactive({
   message: ''
 })
 
-// =======================
 // 日期限制
-// =======================
 const today = new Date()
 const nextMonth = new Date()
 nextMonth.setMonth(today.getMonth() + 1)
@@ -37,10 +35,8 @@ nextMonth.setMonth(today.getMonth() + 1)
 const minDate = today.toISOString().split('T')[0]
 const maxDate = nextMonth.toISOString().split('T')[0]
 
-// =======================
-// 初始化會員資料 & 登入驗證
-// =======================
 
+// 初始化會員資料 & 登入驗證
 onMounted(async () => {
   try {
     const res = await axios.get('/api/profile')
@@ -55,9 +51,7 @@ onMounted(async () => {
 
 
 
-// =======================
 // 監聽是否勾選自動帶入
-// =======================
 watch(autoFill, (checked) => {
   if (checked && memberProfile.value) {
     form.name  = memberProfile.value.username || ''
@@ -70,9 +64,8 @@ watch(autoFill, (checked) => {
   }
 })
 
-// =======================
+
 // 送出訂位
-// =======================
 const submitReservation = async () => {
   try {
     await axios.post('/api/reservation/make', form)
@@ -83,9 +76,8 @@ const submitReservation = async () => {
   }
 }
 
-// =======================
+
 // 登出
-// =======================
 const handleLogout = async () => {
   try {
     await axios.get('/api/logout')
@@ -173,7 +165,7 @@ const handleLogout = async () => {
         </div>
 
         <div class="form-group">
-          <label>📝 特殊需求:</label>
+          <label>📝 備註:</label>
           <textarea v-model="form.message" rows="4"></textarea>
         </div>
 

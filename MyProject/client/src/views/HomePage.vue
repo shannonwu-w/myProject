@@ -534,7 +534,7 @@ const handleLogout = async () => {
 .menu-grid {
   
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
+  grid-template-columns: repeat(auto-fit, minmax(20%, 30%));
   gap: 2rem;
 }
 

@@ -36,6 +36,16 @@ public class AuthcodeController {
             code.append(c);
         }
 
+        //畫線干擾
+        for (int i = 0; i < 5; i++) {
+            g.setColor(new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)));
+            int x1 = rand.nextInt(width);
+            int y1 = rand.nextInt(height);
+            int x2 = rand.nextInt(width);
+            int y2 = rand.nextInt(height);
+            g.drawLine(x1, y1, x2, y2);
+        }
+
         // 存入 session
         session.setAttribute("authcode", code.toString());
 

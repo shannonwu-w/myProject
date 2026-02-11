@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/api/admin/*","/api/profile"})
+@WebFilter(urlPatterns = {"/api/admin/*","/api/profile","/api/reset-password","/api/reservation/*"})
 public class LoginFilter extends HttpFilter {
 
     @Override
@@ -19,11 +19,6 @@ public class LoginFilter extends HttpFilter {
 
         String requestURI = request.getRequestURI();
 
-        // 1. 定義白名單：登入 API 不檢查
-        if (requestURI.equals("/api/login")) {
-            chain.doFilter(request, response);
-            return;
-        }
 
         // 檢查 session 中是否有 userCert
         HttpSession session = request.getSession();

@@ -29,10 +29,6 @@ public class ReservationController {
     public ResponseEntity<?> createReservation(@RequestBody ReservationsDto dto, HttpSession session) {
         UserCert userCert = (UserCert) session.getAttribute("userCert");
 
-        if (userCert == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "請先登入"));
-        }
-
         try {
             reservationService.makeReservation(dto, userCert);
             return ResponseEntity.ok(Map.of("message", "訂位成功！"));

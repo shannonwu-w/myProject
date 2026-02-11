@@ -17,17 +17,23 @@ public interface ReservationRepository extends JpaRepository<Reservations, Long>
     List<Reservations> findByReservationId(Long reservationId);
 
     @Query(value = "SELECT * FROM reservations r WHERE " +
-            "LOWER(r.name) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
-            "LOWER(r.email) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
-            "r.phone LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "r.message LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "TO_CHAR(r.resv_date) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "TO_CHAR(r.TIME_SLOT) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "TO_CHAR(r.people) LIKE CONCAT(CONCAT('%', :pattern), '%') OR " +
-            "TO_CHAR(r.reservation_id) LIKE CONCAT(CONCAT('%', :pattern), '%') " ,
+            "LOWER(r.name) LIKE LOWER('%' || :pattern || '%') OR " +
+            "LOWER(r.email) LIKE LOWER('%' || :pattern || '%') OR " +
+            "r.phone LIKE '%' || :pattern || '%' OR " +
+            "r.message LIKE '%' || :pattern || '%' OR " +
+            "CAST(r.resv_date AS CHAR) LIKE '%' || :pattern || '%' OR " +
+            "CAST(r.time_slot AS CHAR) LIKE '%' || :pattern || '%' OR " +
+            "CAST(r.people AS CHAR) LIKE '%' || :pattern || '%' OR " +
+            "CAST(r.reservation_id AS CHAR) LIKE '%' || :pattern || '%' ",
             countQuery = "SELECT count(*) FROM reservations r WHERE " +
-                    "LOWER(r.name) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%')) OR " +
-                    "LOWER(r.email) LIKE LOWER(CONCAT(CONCAT('%', :pattern), '%'))",
+                    "LOWER(r.name) LIKE LOWER('%' || :pattern || '%') OR " +
+                    "LOWER(r.email) LIKE LOWER('%' || :pattern || '%') OR " +
+                    "r.phone LIKE '%' || :pattern || '%' OR " +
+                    "r.message LIKE '%' || :pattern || '%' OR " +
+                    "CAST(r.resv_date AS CHAR) LIKE '%' || :pattern || '%' OR " +
+                    "CAST(r.time_slot AS CHAR) LIKE '%' || :pattern || '%' OR " +
+                    "CAST(r.people AS CHAR) LIKE '%' || :pattern || '%' OR " +
+                    "CAST(r.reservation_id AS CHAR) LIKE '%' || :pattern || '%' ",
             nativeQuery = true)
     Page<Reservations> findByAllFields(@Param("pattern") String pattern, Pageable pageable);
 

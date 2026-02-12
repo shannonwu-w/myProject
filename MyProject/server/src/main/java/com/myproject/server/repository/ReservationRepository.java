@@ -21,19 +21,19 @@ public interface ReservationRepository extends JpaRepository<Reservations, Long>
             "LOWER(r.email) LIKE LOWER('%' || :pattern || '%') OR " +
             "r.phone LIKE '%' || :pattern || '%' OR " +
             "r.message LIKE '%' || :pattern || '%' OR " +
-            "CAST(r.resv_date AS CHAR) LIKE '%' || :pattern || '%' OR " +
-            "CAST(r.time_slot AS CHAR) LIKE '%' || :pattern || '%' OR " +
-            "CAST(r.people AS CHAR) LIKE '%' || :pattern || '%' OR " +
-            "CAST(r.reservation_id AS CHAR) LIKE '%' || :pattern || '%' ",
+            "TO_CHAR(r.resv_date) LIKE '%' || :pattern || '%' OR " +
+            "TO_CHAR(r.time_slot) LIKE '%' || :pattern || '%' OR " +
+            "TO_CHAR(r.people) LIKE '%' || :pattern || '%' OR " +
+            "TO_CHAR(r.reservation_id) LIKE '%' || :pattern || '%' ",
             countQuery = "SELECT count(*) FROM reservations r WHERE " +
                     "LOWER(r.name) LIKE LOWER('%' || :pattern || '%') OR " +
                     "LOWER(r.email) LIKE LOWER('%' || :pattern || '%') OR " +
                     "r.phone LIKE '%' || :pattern || '%' OR " +
                     "r.message LIKE '%' || :pattern || '%' OR " +
-                    "CAST(r.resv_date AS CHAR) LIKE '%' || :pattern || '%' OR " +
-                    "CAST(r.time_slot AS CHAR) LIKE '%' || :pattern || '%' OR " +
-                    "CAST(r.people AS CHAR) LIKE '%' || :pattern || '%' OR " +
-                    "CAST(r.reservation_id AS CHAR) LIKE '%' || :pattern || '%' ",
+                    "TO_CHAR(r.resv_date) LIKE '%' || :pattern || '%' OR " +
+                    "TO_CHAR(r.time_slot) LIKE '%' || :pattern || '%' OR " +
+                    "TO_CHAR(r.people) LIKE '%' || :pattern || '%' OR " +
+                    "TO_CHAR(r.reservation_id) LIKE '%' || :pattern || '%' ",
             nativeQuery = true)
     Page<Reservations> findByAllFields(@Param("pattern") String pattern, Pageable pageable);
 

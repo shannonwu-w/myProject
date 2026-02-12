@@ -21,16 +21,14 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final UsersMapper usersMapper;
 
-    /**
-     * 查詢所有使用者
-     */
+    //查詢所有使用者
     public Page<UsersDto> findAllUsersByKeyword(String keyword, Pageable pageable) {
         Page<Users> usersPage = usersRepository.findByAllFields(keyword, pageable);
         // 確保 Mapper 能夠將 Users 實體轉為 UsersDto
         return usersPage.map(usersMapper::toDto);
     }
 
-    //新增、編輯方法
+    // 新增、編輯方法
     @Transactional
     public void addUser(UsersDto dto) {
         Users user;

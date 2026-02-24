@@ -23,7 +23,7 @@ public class Users {
     @Column(name = "USER_ID")
     private Long userId;
 
-    // Email 保留唯一約束，用來登入
+    // Email 唯一約束，用來登入
     @Column(name = "EMAIL", nullable = false, length = 100, unique = true)
     private String email;
 

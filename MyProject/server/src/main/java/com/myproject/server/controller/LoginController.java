@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController // 確保回傳資料(JSON)，而不是找 HTML 頁面
+@RestController
 @RequestMapping("/api")
 public class LoginController {
 

@@ -39,6 +39,7 @@ public class LoginController {
             // 5. 驗證失敗：回傳 401 並附帶錯誤訊息
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }finally {
+            // 6. 清除舊的驗證碼
             session.removeAttribute("authcode");
         }
 

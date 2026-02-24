@@ -114,10 +114,10 @@ public class ReservationService {
     }
 
     public Page<ReservationsDto> getAllReservations(Pageable pageable) {
-        // 💡 呼叫 Repository 的分頁版本
+        // 分頁
         Page<Reservations> entityPage = reservationRepository.findAll(pageable);
 
-        // 💡 使用 Page 的 map 方法進行 DTO 轉換
+        // 分頁的map
         return entityPage.map(reservationsMapper::toDto);
     }
 }

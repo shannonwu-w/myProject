@@ -20,12 +20,12 @@ public class AuthcodeController {
     public void getAuthCode(HttpSession session, HttpServletResponse response) throws IOException {
         // 設定圖片屬性
         int width = 100, height = 40;
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics g = image.getGraphics();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); //建立一張空白畫布
+        Graphics g = image.getGraphics(); //像一支畫筆
 
         // 繪製背景
         g.setColor(new Color(220, 210, 200));  // 淺咖啡背景
-        g.fillRect(0, 0, width, height);
+        g.fillRect(0, 0, width, height); // 塗滿背景色
 
         // 生成隨機驗證碼
         String chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

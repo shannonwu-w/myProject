@@ -1,70 +1,83 @@
 <template>
   <div class="register-page">
-    <form class="register-container" @submit.prevent="handleRegister">
+    <q-form @submit="handleRegister" class="register-container">
       <h2>📝 使用者註冊</h2>
       
-      <div v-if="message" class="message">{{ message }}</div>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <transition name="fade">
+        <div v-if="message" class="message">{{ message }}</div>
+        <div v-else-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </transition>
 
-       <!-- Email -->
       <div class="form-group">
         <label for="email">📧 電子信箱(帳號):</label>
-        <input 
-          type="email" 
-          id="email" 
+        <q-input 
+          id="email"
           v-model="registerForm.email" 
-          required
-        >
+          type="email" 
+          placeholder="請符合 email 格式"
+          filled
+          dense
+          :rules="[
+            val => !!val || '請輸入 Email',
+            val => /.+@.+\..+/.test(val) || 'Email 格式不正確'
+          ]"
+        />
       </div>
 
-      <!-- 使用者名稱 -->
       <div class="form-group">
         <label for="username">👤 使用者姓名:</label>
-        <input 
-          type="text" 
-          id="username" 
+        <q-input 
+          id="username"
           v-model="registerForm.username" 
-          required
-        >
+          type="text" 
+          placeholder="請輸入真實姓名"
+          filled
+          dense
+          :rules="[val => !!val || '請輸入姓名']"
+        />
       </div>
 
-      <!-- 密碼 -->
       <div class="form-group">
-        <label for="password">🔒 密碼（至少6碼）:</label>
-        <input 
-          type="password" 
-          id="password" 
+        <label for="password">🔒 密碼:</label>
+        <q-input 
+          id="password"
           v-model="registerForm.password" 
-          required 
-          minlength="6"
-        >
+          type="password" 
+          placeholder="至少六個字"
+          filled
+          dense
+          :rules="[
+            val => !!val || '請輸入密碼',
+            val => val.length >= 6 || '密碼至少需要 6 個字'
+          ]"
+        />
       </div>
 
-     
-
-      <!-- 電話 -->
       <div class="form-group">
         <label for="phone">📞 電話:</label>
-        <input 
-          type="tel" 
-          id="phone" 
+        <q-input 
+          id="phone"
           v-model="registerForm.phone"
-          placeholder="09xx-xxx-xxx"
-        >
+          type="tel" 
+          filled 
+          dense 
+          mask="##########"
+          placeholder="中間不要有「-」或「空格」"
+          :rules="[
+            val => !!val || '電話不能為空',
+            val => val.length === 10 || '電話需為 10 碼'
+          ]"
+        />
       </div>
 
-      <!-- 角色選擇（隱藏或預設 user） -->
-      <input type="hidden" v-model="registerForm.role">
-
-      <!-- 註冊按鈕 -->
-      <div class="form-group">
+      <div class="form-group q-mt-md">
         <button type="submit" class="submit-btn">✅ 註冊</button>
       </div>
 
       <div class="footer-link">
         <router-link to="/login">已有帳號？點我登入</router-link>
       </div>
-    </form>
+    </q-form>
   </div>
 </template>
 
@@ -81,7 +94,7 @@ const registerForm = ref({
   password: '',
   email: '',
   phone: '',
-  role: 'USER'
+  role: 'USER' // 隱藏欄位直接在資料中定義即可，不需 input 標籤
 })
 
 const message = ref('')
@@ -89,11 +102,11 @@ const errorMessage = ref('')
 
 // 處理註冊邏輯
 const handleRegister = async () => {
+  // q-form 在 submit 時若驗證失敗是不會進到這裡的，所以很安全
   try {
     message.value = ''
     errorMessage.value = ''
     
-    // 發送 POST 請求到後端 API
     const response = await axios.post('/api/register', registerForm.value)
     
     if (response.data.success) {
@@ -112,10 +125,8 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
+/* 保持原有背景設計 */
 .register-page {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(to bottom right, #f3e9dd, #d4a574);
   display: flex;
   justify-content: center;
@@ -129,48 +140,32 @@ const handleRegister = async () => {
 
 .register-container {
   background-color: #fff;
-  padding: 40px 30px;
+  padding: 30px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 420px;
-  animation: fadeIn 0.8s ease;
 }
 
 h2 {
   text-align: center;
   color: #8B4513;
-  margin-bottom: 25px;
-  font-size: 1.8em;
+  margin-bottom: 20px;
+  font-size: 1.6em;
 }
 
 .form-group {
-  margin-bottom: 20px;
-  text-align: left;
+  margin-bottom: 5px; /* 減少間距，因為 q-input 的錯誤訊息會佔用空間 */
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #5a4635;
   font-weight: bold;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
-  transition: box-shadow 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  box-shadow: 0 0 8px #d4a574;
-}
-
+/* 調整按鈕 */
 .submit-btn {
   width: 100%;
   padding: 12px;
@@ -181,45 +176,28 @@ h2 {
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
   background-color: #b77d48;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
-.message {
+.message, .error-message {
   text-align: center;
   margin-bottom: 15px;
-  color: #28a745;
-  background: #e8f5e9;
   padding: 10px;
   border-radius: 8px;
 }
 
-.error-message {
-  text-align: center;
-  margin-bottom: 15px;
-  color: #dc3545;
-  background: #fdecea;
-  padding: 10px;
-  border-radius: 8px;
-}
+.message { color: #28a745; background: #e8f5e9; }
+.error-message { color: #dc3545; background: #fdecea; }
 
-.footer-link {
-  text-align: center;
-  margin-top: 15px;
-}
+.footer-link { text-align: center; margin-top: 15px; }
+.footer-link a { color: #8B4513; text-decoration: none; }
 
-.footer-link a {
-  color: #8B4513;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* 簡單的淡入淡出動畫 */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

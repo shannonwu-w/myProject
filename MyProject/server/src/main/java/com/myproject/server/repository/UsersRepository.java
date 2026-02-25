@@ -15,7 +15,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
    Optional<Users> findByEmail(String Email);
 
 
-
+// 不要用 * ，查需要的欄位就好
     @Query(
             value = "SELECT * FROM USERS u WHERE " +
                     "LOWER(u.EMAIL) LIKE LOWER('%' || :keyword || '%') OR " +
@@ -31,5 +31,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
             nativeQuery = true
     )
     Page<Users> findByAllFields(@Param("keyword") String keyword, Pageable pageable);
-
+// 用 Page<Object[]>
 }

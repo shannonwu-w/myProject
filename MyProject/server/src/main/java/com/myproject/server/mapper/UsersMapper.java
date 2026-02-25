@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UsersMapper {
 
+    //查詢是否可以用Object去轉
     @Autowired
     private ModelMapper modelMapper;
 

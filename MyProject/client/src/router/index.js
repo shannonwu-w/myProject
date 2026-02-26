@@ -84,4 +84,49 @@ const router = createRouter({
         ]
         })
 
+
+// --- 路由守衛邏輯 ---
+
+router.beforeEach((to, from, next) => {
+
+  // 1️⃣ 先拿資料
+  const certStr = localStorage.getItem('userCert');
+  const cert = certStr ? JSON.parse(certStr) : null;
+
+  // 2️⃣ 再宣告你會用到的變數
+  const isAuthenticated = !!cert;
+  const userRole = cert?.role; // 🔥 一定要在使用前
+
+  // 3️⃣ 再定義頁面類型
+  const isPublicPage = to.path === '/homepage';
+  const isAuthPage = ['/login', '/register'].includes(to.path);
+  const isAdminPath =
+    to.path.includes('adminpage') ||
+    to.path.includes('all-users') ||
+    to.path.includes('edit') ||
+    to.path.includes('all-bookings');
+
+  // ---- 開始邏輯 ----
+
+  if (isAuthenticated && isAuthPage) {
+    return next({ name: 'homepage' });
+  }
+
+  if (isPublicPage || isAuthPage) {
+    return next();
+  }
+
+  if (!isAuthenticated) {
+    alert('請先登入！');
+    return next({ name: 'login' });
+  }
+
+  if (isAdminPath && userRole !== 'ADMIN') {
+    alert('權限不足，僅限管理員進入');
+    return next({ name: 'homepage' });
+  }
+
+  next();
+});
+
 export default router

@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useQuasar } from 'quasar';
@@ -165,22 +165,22 @@ const pagination = ref({
   rowsNumber: 0
 });
 
-onMounted(() => {
-  const storedToken = localStorage.getItem('userCert');
-  if (!storedToken) {
-    $q.notify({ type: 'warning', message: '請先登入' });
-    router.push('/login');
-    return;
-  }
-  const userCert = JSON.parse(storedToken);
-  userrole.value = userCert.role;
-  if (userrole.value !== 'ADMIN') {
-    $q.notify({ type: 'negative', message: '沒有權限' });
-    router.push('/homepage');
-    return;
-  }
-  fetchUsers();
-});
+// onMounted(() => {
+//   const storedToken = localStorage.getItem('userCert');
+//   if (!storedToken) {
+//     $q.notify({ type: 'warning', message: '請先登入' });
+//     router.push('/login');
+//     return;
+//   }
+//   const userCert = JSON.parse(storedToken);
+//   userrole.value = userCert.role;
+//   if (userrole.value !== 'ADMIN') {
+//     $q.notify({ type: 'negative', message: '沒有權限' });
+//     router.push('/homepage');
+//     return;
+//   }
+//   fetchUsers();
+// });
 
 // 處理 QTable 的分頁請求
 const onRequest = (props) => {

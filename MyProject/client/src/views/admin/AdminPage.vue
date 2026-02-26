@@ -56,7 +56,6 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import axios from 'axios';
 
 const router = useRouter();
 const $q = useQuasar();
@@ -94,13 +93,12 @@ const handleLogout = () => {
     persistent: true,
     color: 'brown-6'
   }).onOk(async () => {
-    await axios.post('/api/logout');
     localStorage.removeItem('userCert');
     $q.notify({
       color: 'brown-6',
       message: '🐾 登出成功',
       icon: 'door_open',
-      position: top
+      position: 'top'
     });
     router.push('/homepage');
   });

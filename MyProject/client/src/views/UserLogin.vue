@@ -35,10 +35,10 @@ const handleLogin = async () => {
         const cert = response.data; 
         // console.log("歡迎！您的角色是：" + cert.role);
         localStorage.setItem('userCert', JSON.stringify(cert));
+        localStorage.setItem('userRole', cert.role);
+
         
-        // 根據角色跳轉頁面
-        if (cert.role === 'admin') router.push('/adminpage');
-        else router.push('/homepage');
+        router.push('/homepage');
 
     } catch (error) {
         // 失敗時顯示後端錯誤訊息

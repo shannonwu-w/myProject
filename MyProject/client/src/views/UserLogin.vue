@@ -1,55 +1,52 @@
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
+import request from '@/utils/request'  // 改用 request.js
 
 const router = useRouter()
 
-// 定義表單資料
 const loginForm = ref({
   email: 'twice@gmail',     
   password: '123456',
   authcode: ''
 })
 
-// 錯誤訊息與驗證碼圖片路徑
 const errorMsg = ref('')
 const captchaUrl = ref('/api/authcode')
 
-// 重新整理驗證碼
+// 刷新驗證碼
 const refreshAuthcode = () => {
   captchaUrl.value = `/api/authcode?t=${new Date().getTime()}`
 }
 
-// 處理登入提交
+// 登入提交
 const handleLogin = async () => {
-    try {
-        // 發送 JSON 格式的 LoginDto
-        const response = await axios.post('/api/login', {
-            email: loginForm.value.email,   // 使用 email
-            password: loginForm.value.password,
-            authcode: loginForm.value.authcode
-        });
+  try {
+    // 使用 request.js 發送請求
+    const res = await request.post('/api/login', {
+      email: loginForm.value.email,
+      password: loginForm.value.password,
+      authcode: loginForm.value.authcode
+    })
 
-        // 登入成功，取得 UserCert
-        const cert = response.data; 
-        // console.log("歡迎！您的角色是：" + cert.role);
-        localStorage.setItem('userCert', JSON.stringify(cert));
-        localStorage.setItem('userRole', cert.role);
-
-        
-        router.push('/homepage');
-
-    } catch (error) {
-        // 失敗時顯示後端錯誤訊息
-        errorMsg.value = error.response?.data || '登入失敗，請稍後再試';
-        // 同步刷新驗證碼
-        refreshAuthcode();
+    // 假設後端回傳包含 token
+    const cert = {
+      username: res.username,
+      role: res.role,
+      email: res.email,
+      token: res.token   // ✅ 確保 token 在這裡
     }
 
-    
-}
+    localStorage.setItem('userCert', JSON.stringify(cert))
+    localStorage.setItem('userRole', cert.role)
 
+    router.push('/homepage')
+
+  } catch (err) {
+    errorMsg.value = err.response?.data || '登入失敗，請稍後再試'
+    refreshAuthcode()
+  }
+}
 
 // 重置表單
 const handleReset = () => {

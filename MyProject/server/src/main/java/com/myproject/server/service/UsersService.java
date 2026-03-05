@@ -52,6 +52,12 @@ public class UsersService {
         usersRepository.save(user);
     }
 
+    public Long getUserIdByEmail(String email) {
+        return usersRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("使用者不存在"))
+                .getUserId();
+    }
+
     public UserProfileDto getUserProfileByEmail(String email) throws Exception {
         Users user = usersRepository.findByEmail(email)
                 .orElseThrow(() -> new Exception("使用者不存在"));

@@ -41,7 +41,8 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import request from '@/utils/request'
+
 
 // 使用者資料
 const user = ref({
@@ -56,13 +57,13 @@ const isLoggedIn = ref(false);
 // 取得使用者完整資料（同時驗證登入）
 const fetchUserProfile = async () => {
   try {
-    const res = await axios.get('/api/profile', { withCredentials: true });
+    const res = await request.get('/api/profile', { withCredentials: true });
     // 登入成功
     isLoggedIn.value = true;
     user.value = {
-      username: res.data.username || '未提供',
-      email: res.data.email || '未提供',
-      phone: res.data.phone || '未提供'
+      username: res.username || '未提供',
+      email: res.email || '未提供',
+      phone: res.phone || '未提供'
     };
   } catch (err) {
     // 401 或未登入 → 跳轉登入頁

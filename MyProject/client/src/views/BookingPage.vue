@@ -1,21 +1,12 @@
 <script setup>
 import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
-
-axios.defaults.withCredentials = true
+import request from '@/utils/request'
 
 const router = useRouter()
 const isLoggedIn = ref(false)
 const memberProfile = ref(null)
-
- 
-// 是否自動帶入會員資料
-
 const autoFill = ref(false)
-
-
-// 訂位表單
 
 const form = reactive({
   name: '',
@@ -27,48 +18,33 @@ const form = reactive({
   message: ''
 })
 
-// 日期限制
-const today = new Date()
-const nextMonth = new Date()
-nextMonth.setMonth(today.getMonth() + 1)
-
-const minDate = today.toISOString().split('T')[0]
-const maxDate = nextMonth.toISOString().split('T')[0]
-
-
-// 初始化會員資料 & 登入驗證
 onMounted(async () => {
   try {
-    const res = await axios.get('/api/profile')
+    const res = await request.get('/api/profile')
     isLoggedIn.value = true
-    memberProfile.value = res.data
+    memberProfile.value = res
   } catch (err) {
-    alert('請先登入')
+    alert('請先登入'+ err)
     router.push('/login')
-    console.log(err)
+    
   }
 })
 
-
-
-// 監聽是否勾選自動帶入
 watch(autoFill, (checked) => {
   if (checked && memberProfile.value) {
     form.name  = memberProfile.value.username || ''
     form.phone = memberProfile.value.phone || ''
     form.email = memberProfile.value.email || ''
-  } else if (!checked) {
+  } else {
     form.name  = ''
     form.phone = ''
     form.email = ''
   }
 })
 
-
-// 送出訂位
 const submitReservation = async () => {
   try {
-    await axios.post('/api/reservation/make', form)
+    await request.post('/api/reservation/make', { ...form })
     router.push('/bookingsuccess')
   } catch (error) {
     const msg = error.response?.data?.error || '訂位失敗'
@@ -76,20 +52,11 @@ const submitReservation = async () => {
   }
 }
 
-
-// 登出
-const handleLogout = async () => {
-  try {
-    await axios.get('/api/logout')
-  } catch(error) {
-      console.log(error);
-  }
-  // 清除 localStorage
+const handleLogout = () => {
   localStorage.removeItem('userCert')
   router.push('/login')
 }
 </script>
-
 <template>
   <div class="reservation-page">
     <nav class="navbar">

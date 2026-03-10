@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import request from '@/utils/request'
 // import router from '@/router';
 
 
@@ -67,11 +67,11 @@ const reservations = ref([]);
 onMounted(async () => {
   
   try {
-    const res = await axios.get('/api/reservation/history', {
+    const res = await request.get('/api/reservation/history', {
      
     });
-    reservations.value = res.data;
-    console.log("後端回傳的資料內容:", res.data);
+    reservations.value = res;
+    console.log("後端回傳的資料內容:", res);
   } catch (e) {
     console.error(e);
     alert('取得訂位紀錄失敗');
@@ -91,7 +91,7 @@ const isTomorrowOrLater = (dateStr) => {
 // 刪除訂位邏輯
 const deleteReservation = async (reservationId) => {
   if (confirm('❗️確定要取消這筆訂位紀錄嗎？')) {
-    await axios.post(`/api/reservation/delete/${reservationId}`)
+    await request.post(`/api/reservation/delete/${reservationId}`)
     console.log(`正在刪除訂位 ID: ${reservationId}`);
         alert('已成功取消訂位');
         window.location.reload(); 

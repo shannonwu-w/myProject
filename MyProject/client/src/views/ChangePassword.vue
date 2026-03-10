@@ -23,8 +23,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import router from '@/router';
+import request from '@/utils/request'
+
 
 const newPassword = ref('');
 const confirmPassword = ref('');
@@ -55,13 +56,13 @@ const submitForm = async () => {
 
   try {
     // 前端不用傳 userId，後端 session 會拿
-    const res = await axios.post(
+    const res = await request.post(
       '/api/reset-password',
       { password: newPassword.value },
       { withCredentials: true } // 帶 cookie 給後端 session
     );
 
-    successMsg.value = res.data.message || '密碼更新成功！';
+    successMsg.value = res.message || '密碼更新成功！';
     errorMsg.value = '';
     newPassword.value = '';
     confirmPassword.value = '';

@@ -5,9 +5,7 @@
       <!-- 標題 -->
       <q-card-section class="row items-center q-pb-none">
         <q-icon name="event_note" size="32px" color="brown-8" />
-        <div class="text-h5 text-brown-9 q-ml-sm">
-          顧客訂位總覽
-        </div>
+        <div class="text-h5 text-brown-9 q-ml-sm">顧客訂位總覽（測試版）</div>
       </q-card-section>
 
       <q-separator class="q-my-md" />
@@ -34,7 +32,7 @@
         </div>
       </q-card-section>
 
-      <!-- 表格 -->
+      <!-- 資料表 -->
       <q-card-section>
         <q-table
           flat
@@ -86,22 +84,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-// import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
 import request from '@/utils/request'
 
-// const router = useRouter()
-
-// 資料與狀態
 const searchQuery = ref('')
 const displayList = ref([])
 const loading = ref(false)
+const errorMessage = ref('')
+
 const currentPage = ref(0)
 const totalPages = ref(0)
 const pageSize = ref(5)
-const errorMessage = ref('')
 
-// 表格欄位
 const columns = [
   { name: 'reservationId', label: '編號', field: 'reservationId', align: 'center' },
   { name: 'resvDate', label: '日期', field: 'resvDate', align: 'center' },
@@ -113,13 +107,10 @@ const columns = [
   { name: 'message', label: '備註', field: 'message', align: 'center' }
 ]
 
-// 取訂位資料
 const fetchReservations = async (page = 0) => {
   loading.value = true
   errorMessage.value = ''
-
   try {
-    console.log('param',{ keyword: searchQuery.value, page, size: pageSize.value })
     const res = await request.get('/api/reservation/search', {
       params: { keyword: searchQuery.value, page, size: pageSize.value }
     })
@@ -128,40 +119,27 @@ const fetchReservations = async (page = 0) => {
     currentPage.value = page
   } catch (err) {
     console.error(err)
-    // 401 / 403 / 其他錯誤都顯示在畫面上
-    if (err.response) {
-      if (err.response.status === 401) {
-        errorMessage.value = '未登入或 token 過期'
-      } else if (err.response.status === 403) {
-        errorMessage.value = '沒有權限存取'
-      } else {
-        errorMessage.value = err.response.data?.error || '抓取資料失敗'
-      }
-    } else {
-      errorMessage.value = '網路錯誤，無法連線後端'
-    }
+    errorMessage.value = err.response?.data?.error || '抓取資料失敗'
   } finally {
     loading.value = false
-    console.log('fetchReservations called, token:', localStorage.getItem('userCert'))
   }
 }
 
-// 搜尋 & 重設
 const handleSearch = () => fetchReservations(0)
 const resetSearch = () => {
   searchQuery.value = ''
   fetchReservations(0)
 }
 
-// 分頁
 const currentPagePlusOne = computed({
   get: () => currentPage.value + 1,
-  set: v => currentPage.value = v - 1
+  set: v => (currentPage.value = v - 1)
 })
+
 const pageChanged = page => fetchReservations(page - 1)
 
-// 權限檢查
 onMounted(() => {
+  // JWT 權限檢查
   const certStr = localStorage.getItem('userCert')
   if (!certStr) {
     errorMessage.value = '未登入，無法抓取資料'
@@ -177,5 +155,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.q-btn { margin-left: 10px; }
+.q-btn {
+  margin-left: 10px;
+}
 </style>

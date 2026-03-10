@@ -34,7 +34,7 @@ const handleLogin = async () => {
       username: res.username,
       role: res.role,
       email: res.email,
-      token: res.token   // ✅ 確保 token 在這裡
+      token: res.token   
     }
 
     localStorage.setItem('userCert', JSON.stringify(cert))

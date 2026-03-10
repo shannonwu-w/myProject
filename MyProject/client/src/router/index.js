@@ -77,8 +77,13 @@ const router = createRouter({
         },
          {
         path: '/test',
-        name: 'test',
-        component: () => import('../views/TestPage.vue')
+        name: 'testJwt',
+        component: () => import('../views/TestJwt.vue')
+        }, 
+        {
+        path: '/test_jwtpage',
+        name: 'testjwtpage',
+        component: () => import('../views/TestBookingPage.vue')
         }
         
         ]

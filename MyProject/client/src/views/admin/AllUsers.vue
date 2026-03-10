@@ -130,8 +130,9 @@
 <script setup>
 import { ref} from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+// import axios from 'axios';
 import { useQuasar } from 'quasar';
+import request from '@/utils/request'
 
 const $q = useQuasar();
 const router = useRouter();
@@ -198,22 +199,23 @@ const onRequest = (props) => {
 const fetchUsers = async () => {
   loading.value = true;
   try {
-    const res = await axios.get('/api/admin/find-users', {
+    const res = await request.get('/api/admin/find-users', {
       params: {
         keyword: searchKeyword.value,
-        page: pagination.value.page - 1, // Quasar 是 1-based, Spring 是 0-based
+        page: pagination.value.page - 1,
         size: pagination.value.rowsPerPage
       }
     });
-    userList.value = res.data.content;
-    pagination.value.rowsNumber = res.data.totalElements;
+
+    userList.value = res.content;
+    pagination.value.rowsNumber = res.totalElements;
+
   } catch (error) {
-    $q.notify({ type: 'negative', message: '載入失敗' +error });
+    $q.notify({ type: 'negative', message: '載入失敗 ' + error });
   } finally {
     loading.value = false;
   }
 };
-
 const editUser = (user) => {
   selectedUser.value = { ...user, password: '' };
   showEditDialog.value = true;
@@ -221,38 +223,24 @@ const editUser = (user) => {
 
 const saveUpdate = async () => {
   try {
-    const response = await axios.post('/api/admin/update-user', selectedUser.value);
-    if (response.data.includes("成功")) {
+    const res = await request.post('/api/admin/update-user', selectedUser.value);
+
+    if (res.message.includes("成功")) {
       $q.notify({ type: 'positive', message: '更新成功' });
       showEditDialog.value = false;
       fetchUsers();
     }
+
   } catch (error) {
-    $q.notify({ type: 'negative', message: '更新失敗'+ error });
+    $q.notify({ type: 'negative', message: '更新失敗 ' + error });
   }
 };
 
-const deleteUser = (user) => {
-  $q.dialog({
-    title: '確定刪除？',
-    message: `將刪除使用者「${user.username}」，此操作無法復原。`,
-    cancel: true,
-    color: 'negative'
-  }).onOk(async () => {
-    try {
-      await axios.post('/api/admin/deleteUser', null, { params: { userId: user.userId } });
-      $q.notify({ type: 'positive', message: '已刪除' });
-      fetchUsers();
-    } catch (e) {
-      $q.notify({ type: 'negative', message: '刪除失敗'+ e });
-    }
-  });
-};
 
 const addUser = async () => {
   try {
-    const response = await axios.post('/api/admin/update-user', newUser.value);
-    if (response.data.includes("成功")) {
+    const response = await request.post('/api/admin/update-user', newUser.value);
+    if (response.message.includes("成功")) {
       $q.notify({ type: 'positive', message: '建立成功' });
       newUser.value = { username: '', email: '', password: '', phone: '', role: 'USER' };
       setTimeout(() => {
@@ -267,6 +255,24 @@ const addUser = async () => {
     $q.notify({ type: 'negative', message: '新增失敗'+error });
   }
 };
+
+const deleteUser = (user) => {
+  $q.dialog({
+    title: '確定刪除？',
+    message: `將刪除使用者「${user.username}」，此操作無法復原。`,
+    cancel: true,
+    color: 'negative'
+  }).onOk(async () => {
+    try {
+      await request.post('/api/admin/deleteUser', null, { params: { userId: user.userId } });
+      $q.notify({ type: 'positive', message: '已刪除' });
+      fetchUsers();
+    } catch (e) {
+      $q.notify({ type: 'negative', message: '刪除失敗'+ e });
+    }
+  });
+};
+
 
 const handleLogout = () => {
   localStorage.removeItem('userCert');

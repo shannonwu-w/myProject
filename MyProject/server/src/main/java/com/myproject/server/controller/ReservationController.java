@@ -1,21 +1,17 @@
 package com.myproject.server.controller;
 
 import com.myproject.server.domain.dto.ReservationsDto;
-import com.myproject.server.domain.dto.UserCert;
-import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.service.ReservationService;
-import javax.servlet.http.HttpSession;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,62 +23,83 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
-    //新增、修改訂位資料
+    // 新增、修改訂位資料
     @PostMapping("/make")
-    public ResponseEntity<?> createReservation(@RequestBody ReservationsDto dto, HttpSession session) {
-        UserCert userCert = (UserCert) session.getAttribute("userCert");
-
+    public ResponseEntity<?> createReservation(@RequestBody ReservationsDto dto) {
+        // 從 Spring Security context 取得使用者 email (JWT Filter 已放入 principal)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "使用者未登入"));
+        }
+        String email = auth.getPrincipal().toString();
 
         try {
-            reservationService.makeReservation(dto, userCert);
+            reservationService.makeReservationByEmail(dto, email);
             return ResponseEntity.ok(Map.of("message", "訂位成功！"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
 
-    //使用者查看自己的訂位紀錄
+    // 使用者查看自己的訂位紀錄
     @GetMapping("/history")
-    public List<ReservationsDto> myReservations(HttpSession session) {
-        UserCert userCert = (UserCert) session.getAttribute("userCert");
-        log.info("userCert  UserId----------------{}", userCert.getUserId());
-        return reservationService.getMyReservations(userCert.getUserId());
-    }
-
-    //刪除訂位
-    @PostMapping("/delete/{reservationId}")
-    public void deleteReservation(@PathVariable Long reservationId){
-
-       this.reservationService.deleteResv(reservationId);
-    }
-
-    //查看全部的訂位
-//    @GetMapping("/all-reservations")
-//    public List<ReservationsDto> allReservations(){
-//        return this.reservationService.allReservations();
-//    }
-
-    //得到要編輯的訂位資料
-    @GetMapping("/edit/{reservationId}")
-    public List<ReservationsDto> editReservation(@PathVariable Long reservationId){
-        return this.reservationService.getResvEditData(reservationId);
-    }
-
-    //查詢
-    @GetMapping("/search")
-    public Page<ReservationsDto> searchReservations(
-            @RequestParam(required = false) String keyword,
-            Pageable pageable) {
-
-        if (keyword == null) {
-            return reservationService.getAllReservations(pageable);
-        } else {
-            return reservationService.getReservations(keyword, pageable);
+    public ResponseEntity<?> myReservations() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "使用者未登入"));
+        }
+        String email = auth.getPrincipal().toString();
+        try {
+            List<ReservationsDto> reservations = reservationService.getMyReservationsByEmail(email);
+            return ResponseEntity.ok(reservations);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
+    // 刪除訂位
+    @PostMapping("/delete/{reservationId}")
+    public ResponseEntity<?> deleteReservation(@PathVariable Long reservationId) {
+        try {
+            reservationService.deleteResv(reservationId);
+            return ResponseEntity.ok(Map.of("message", "刪除成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
+    // 得到要編輯的訂位資料
+    @GetMapping("/edit/{reservationId}")
+    public ResponseEntity<?> editReservation(@PathVariable Long reservationId) {
+        try {
+            List<ReservationsDto> dto = reservationService.getResvEditData(reservationId);
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
-
+    // 查詢全部或關鍵字
+    @GetMapping("/search")
+    public ResponseEntity<?> searchReservations(
+            @RequestParam(required = false) String keyword,
+            Pageable pageable) {
+        try {
+            Page<ReservationsDto> page;
+            if (keyword == null || keyword.isBlank()) {
+                page = reservationService.getAllReservations(pageable);
+            } else {
+                page = reservationService.getReservations(keyword, pageable);
+            }
+            return ResponseEntity.ok(page);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }
-

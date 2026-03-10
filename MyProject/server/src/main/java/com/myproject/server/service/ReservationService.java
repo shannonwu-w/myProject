@@ -1,7 +1,6 @@
 package com.myproject.server.service;
 
 import com.myproject.server.domain.dto.ReservationsDto;
-import com.myproject.server.domain.dto.UserCert;
 import com.myproject.server.domain.entity.Reservations;
 import com.myproject.server.domain.entity.TableList;
 import com.myproject.server.domain.entity.Users;
@@ -28,8 +27,11 @@ public class ReservationService {
     private final UsersRepository usersRepository;
     private final ReservationsMapper reservationsMapper;
 
+    /** 原本依賴 UserCert 的 makeReservation 改成透過 email */
     @Transactional
-    public void makeReservation(ReservationsDto dto, UserCert userCert) throws Exception {
+    public void makeReservationByEmail(ReservationsDto dto, String email) throws Exception {
+        Users user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("使用者不存在"));
 
         // 1. 查找該日期與時段已被預訂的資料
         List<Reservations> existing = reservationRepository.findByResvDateAndTimeSlot(dto.getResvDate(), dto.getTimeSlot());
@@ -54,12 +56,22 @@ public class ReservationService {
         entity.setTableId(candidates.get(0).getTableId());
 
         // 6. 設定使用者
-        Users user = usersRepository.findByUserId(userCert.getUserId())
-                .orElseThrow(() -> new Exception("使用者不存在"));
         entity.setUserId(user.getUserId());
 
         // 7. 儲存
         reservationRepository.save(entity);
+    }
+
+    /** 取得使用者自己的訂位紀錄 by email */
+    public List<ReservationsDto> getMyReservationsByEmail(String email) throws Exception {
+        Users user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("使用者不存在"));
+
+        List<Reservations> list = reservationRepository.findByUserId(user.getUserId());
+
+        return list.stream()
+                .map(reservationsMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     private List<TableList> findAvailableTables(Integer people, Set<Long> reservedTableIds) throws Exception {
@@ -74,28 +86,8 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-//    public List<ReservationsDto> allReservations(){
-//        List<Reservations> list = reservationRepository.findAll();
-//        return list.stream()
-//                .map(reservationsMapper::toDto)
-//                .collect(Collectors.toList());
-//    }
-
-    public List<ReservationsDto> getMyReservations(Long userId) {
-        List<Reservations> list = reservationRepository.findByUserId(userId);
-
-        // Entity -> DTO
-        return list.stream()
-                .map(reservationsMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-
-
-    public void deleteResv(Long reservationId){
-
+    public void deleteResv(Long reservationId) {
         this.reservationRepository.deleteById(reservationId);
-
     }
 
     public List<ReservationsDto> getResvEditData(Long reservationId){
@@ -105,7 +97,6 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-
     public Page<ReservationsDto> getReservations(String keyword, Pageable pageable) {
         String pattern = "%" + keyword + "%";
         Page<Reservations> entityPage = reservationRepository.findByAllFields(pattern, pageable);
@@ -114,10 +105,7 @@ public class ReservationService {
     }
 
     public Page<ReservationsDto> getAllReservations(Pageable pageable) {
-        // 分頁
         Page<Reservations> entityPage = reservationRepository.findAll(pageable);
-
-        // 分頁的map
         return entityPage.map(reservationsMapper::toDto);
     }
 }

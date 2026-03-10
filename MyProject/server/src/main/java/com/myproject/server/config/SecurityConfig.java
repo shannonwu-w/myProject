@@ -25,27 +25,30 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
 
-                // 1️⃣ 無狀態 Session
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .formLogin().disable()
+                .httpBasic().disable()
 
-                // 2️⃣ 權限配置
-                .authorizeHttpRequests(auth -> auth
-                        // OPTIONS 放行 (CORS)
-                        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // 設定無狀態 Session（JWT 不需要 server session）
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
 
-                        // 登入與驗證碼放行
-                        .antMatchers("/api/login", "/api/authcode").permitAll()
+                // 權限設定
+                .authorizeRequests()
+                // OPTIONS 放行 (CORS)
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 管理員 API
-                        .antMatchers("/api/reservation/**").hasRole("ADMIN")
+                // 登入、驗證碼、註冊 API 放行
+                .antMatchers("/api/login", "/api/authcode", "/api/register").permitAll()
 
-                        // 其他 API 必須登入
-                        .anyRequest().authenticated()
-                )
+                // 管理員專屬 API
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
 
-                // 3️⃣ 加入 JWT Filter
+                // 其他 API 需要登入
+                .anyRequest().authenticated()
+                .and()
+
+                // 加入 JWT Filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
